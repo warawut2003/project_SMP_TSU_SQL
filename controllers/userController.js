@@ -51,3 +51,67 @@ exports.CreateUser = async(req,res) => {
     }
     
 }
+
+exports.getUsers = async(req,res) =>{
+
+    connection.execute('SELECT * FROM users;')
+        
+            .then((result) => {
+        
+               var rawData = result[0];
+        
+               res.send(rawData);
+        
+               
+        
+            }).catch((err) => {
+        
+               console.log(err);
+        
+               res.end();
+        
+            });
+}
+
+exports.getUser = async(req,res) =>{
+    const userId = req.params.id;
+
+    try {
+        const [rows] = await connection.execute('SELECT * FROM users WHERE User_id = ?', [userId]);
+        if (rows.length > 0) {
+            res.status(200).json(rows[0]);
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error retrieving user');
+    }
+}
+
+exports.UpdateUser =  async(req,res) =>{
+    const {User_Flie} = req.body;
+    const now = new Date().toISOString().slice(0,19).replace('T', ' ');
+
+    connection.execute("UPDATE users SET User_file=?, update_at=? WHERE User_id=?",
+        [User_Flie, now, req.params.id]
+    ).then(() =>{
+        console.log('Update Successfully');
+        res.status(200).send("Update Successfully.");
+    }).catch((err) => {
+        console.log(err);
+        res.status(500).send("Error updating user.");
+    });
+}
+
+exports.DeleteUser = async(req,res) =>{
+    connection.execute("DELETE FROM users WHERE User_id =?;",
+        [req.params.id]
+    ).then(() =>{
+        console.log('Delete Successfully');
+    }).catch((err) =>{
+        console.log(err);
+    });
+    res.status(200).send("Delete Successfully.");
+    res.end();
+}

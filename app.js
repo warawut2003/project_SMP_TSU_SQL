@@ -33,6 +33,10 @@ app.get('/admin/projects', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'projects.html')); // ชี้ไปยังไฟล์ HTML ของคุณ
 });
 
+app.get('/admin/add/project', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'add_project.html')); // ชี้ไปยังไฟล์ HTML ของคุณ
+});
+
 app.use('/',function(req,res,next){
     res.sendStatus(404);
 });

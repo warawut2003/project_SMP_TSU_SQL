@@ -3,7 +3,7 @@ const  connection  = require("../db.config");
 exports.createProject = async (req,res) => {
     const {ProjectName,Openday,Turnoffday,ProjectFile} = req.body;
 
-    if(!ProjectName ||!Openday ||!Turnoffday  ||!File ){
+    if(!ProjectName ||!Openday ||!Turnoffday  ||!ProjectFile ){
         return res.status(400).send('Missing required fields');
     }
     try{

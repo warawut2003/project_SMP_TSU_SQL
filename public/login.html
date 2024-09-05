@@ -35,7 +35,9 @@
             if (response.ok) {
                 const data = await response.json();
                 alert('Login successful!');
-                console.log('Access Token:', data.accessToken);
+                localStorage.setItem('accessToken', data.accessToken);
+                localStorage.setItem('refreshToken', data.refreshToken);
+                window.location.href = '/admin/projects';
             } else {
                 alert('Login failed! Please check your username or password.');
             }

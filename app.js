@@ -36,6 +36,8 @@ app.get('/admin/projects', (req, res) => {
 app.get('/admin/add/project', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'add_project.html')); // ชี้ไปยังไฟล์ HTML ของคุณ
 });
+// ให้บริการไฟล์จากโฟลเดอร์ uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/',function(req,res,next){
     res.sendStatus(404);

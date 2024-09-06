@@ -6,7 +6,7 @@ router.post("/", async(req,res)=>{
     res.sendStatus(404);
 });
 
-router.get("/:project_id", getProject);
+router.get("/:project_id",getProject);
 router.get("/", getProjects);
 
 module.exports = router;

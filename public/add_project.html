@@ -34,6 +34,7 @@
         document.getElementById('projectForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
+            const accessToken = localStorage.getItem('accessToken');
             // สร้าง FormData object
             const formData = new FormData();
             formData.append('ProjectName', document.getElementById('projectName').value);
@@ -44,11 +45,16 @@
             try {
                 const response = await fetch('/api/admin/create/project', {
                     method: 'POST',
+                    headers : {
+                        'Authorization': `Bearer ${accessToken}`,
+
+                    },
                     body: formData
                 });
 
                 if (response.ok) {
                     alert('Project added successfully!');
+                    window.location.href = '/admin/projects'; 
                 } else {
                     alert('Failed to add project: ' + await response.text());
                 }

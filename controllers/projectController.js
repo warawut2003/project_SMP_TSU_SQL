@@ -1,51 +1,74 @@
 const  connection  = require("../db.config");
-
-exports.createProject = async (req,res) => {
-    const {ProjectName,Openday,Turnoffday,ProjectFile} = req.body;
-
-    if(!ProjectName ||!Openday ||!Turnoffday  ||!ProjectFile ){
-        return res.status(400).send('Missing required fields');
+const multer = require('multer');
+const fs = require('fs');
+const storage = multer.diskStorage({
+    destination: function (req,file,cb) {
+        const uploadDir = 'D:/project/system_recruitment_tsu_smp/uploads/ProjectFile';
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+    },
+    filename : function (req,file,cb){
+        const decodedFileName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+        cb(null,decodedFileName);
     }
-    try{
-        const [rows] = await connection.query('SELECT project_id FROM PROJECTS ORDER BY project_id DESC LIMIT 1');
-        let newProjectId = 'A0001';
-        if (rows.length > 0) {
-            let lastProjectId = rows[0].project_id;
-            
-            // แยกตัวอักษรและตัวเลขออกจากรหัสล่าสุด
-            let lastLetterPart = lastProjectId.substring(0, 1); // ตัวอักษร
-            let lastNumberPart = parseInt(lastProjectId.substring(1), 10); // ตัวเลข
+})
+const upload = multer({storage})
 
-            if(lastNumberPart < 9999){
-                lastNumberPart += 1;
-            }else{
-                lastNumberPart = 1;
-                if(lastLetterPart < 'Z'){
-                    lastLetterPart = String.fromCharCode(lastLetterPart.charCodeAt(0) + 1);
-                }else{
-                    throw new Error('Reached maximum ID value');
-                }
-            }
+exports.createProject = [
+    upload.single('ProjectFile'), // ใช้ multer middleware
+    async (req, res) => {
+        const { ProjectName, Openday, Turnoffday } = req.body;
+        const ProjectFile = req.file ? req.file.filename : null;// รับชื่อไฟล์
 
-            // สร้างรหัสใหม่
-            newProjectId = `${lastLetterPart}${lastNumberPart.toString().padStart(4, '0')}`;
+        
+
+        // ตรวจสอบความครบถ้วนของข้อมูล
+        if (!ProjectName || !Openday || !Turnoffday || !ProjectFile) {
+            return res.status(400).send('Missing required fields');
         }
 
-        connection.execute(`INSERT INTO projects(project_id ,project_name ,project_file ,project_start_date ,project_expiration_date ) VALUES (?, ?, ?, ?, ? );`,
-            [
-                newProjectId, ProjectName,ProjectFile,Openday,Turnoffday
-            ]
-        );
+        try {
+            // สร้างรหัสโครงการใหม่
+            const [rows] = await connection.query('SELECT project_id FROM PROJECTS ORDER BY project_id DESC LIMIT 1');
+            let newProjectId = 'A0001';
+            if (rows.length > 0) {
+                let lastProjectId = rows[0].project_id;
 
-        console.log("Successfully added");
-        res.status(201).send('Successfully added');
+                let lastLetterPart = lastProjectId.substring(0, 1);
+                let lastNumberPart = parseInt(lastProjectId.substring(1), 10);
 
-    }catch (err){
-        console.error(err);
-        res.status(500).send('An error occurred adding');
+                if (lastNumberPart < 9999) {
+                    lastNumberPart += 1;
+                } else {
+                    lastNumberPart = 1;
+                    if (lastLetterPart < 'Z') {
+                        lastLetterPart = String.fromCharCode(lastLetterPart.charCodeAt(0) + 1);
+                    } else {
+                        throw new Error('Reached maximum ID value');
+                    }
+                }
+
+                newProjectId = `${lastLetterPart}${lastNumberPart.toString().padStart(4, '0')}`;
+            }
+
+            // แทรกข้อมูลลงในฐานข้อมูล
+            await connection.execute(`INSERT INTO projects (project_id, project_name, project_file, project_start_date, project_expiration_date) VALUES (?, ?, ?, ?, ?);`,
+                [
+                    newProjectId, ProjectName, ProjectFile, Openday, Turnoffday
+                ]
+            );
+
+            console.log("Successfully added");
+            res.status(201).send('Successfully added');
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).send('An error occurred adding');
+        }
     }
-
-}
+];
 exports.deleteProject = async (req, res) => {
     const { project_id } = req.params;
 

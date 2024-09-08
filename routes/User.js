@@ -3,6 +3,7 @@ const router = express.Router();
 
 const {CreateUser,getUser,getUsers,UpdateUser,DeleteUser} = require("../controllers/userController");
 
+
 router.post("/", async(req,res)=>{
     res.sendStatus(404);
 });

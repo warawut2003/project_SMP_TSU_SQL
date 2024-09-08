@@ -1,56 +1,79 @@
 const  connection  = require("../db.config");
 
-exports.CreateUser = async(req,res) => {
 
-    const {National_ID ,User_prefix ,User_Fname ,User_Lname ,User_gender ,User_Date_Birth ,User_age ,phone_num ,User_email ,User_status ,User_Image ,User_file} = req.body
 
-    if ( !National_ID || !User_prefix || !User_Fname || !User_Lname|| !User_gender || !User_Date_Birth 
-        || !User_age || !phone_num || !User_email||!User_status ||!User_Image ||!User_file
-    ) {
-        return res.status(400).send('Missing required fields');
-    }
+const { uploadMiddleware } = require('../middlewares/upload');
 
-    const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+const generateUserId = async () => {
+    const [rows] = await connection.query('SELECT User_id FROM users ORDER BY User_id DESC LIMIT 1');
+    let newUserId = 'A001';
+    if (rows.length > 0) {
+        let lastUserId = rows[0].User_id;
+        let lastLetterPart = lastUserId.substring(0, 1);
+        let lastNumberPart = parseInt(lastUserId.substring(1), 10);
 
-    try{
-        const [rows] = await connection.query('SELECT User_id FROM users ORDER BY User_id DESC LIMIT 1');
-        let newUserId = 'A001';
-        if (rows.length > 0) {
-            let lastUserId = rows[0].User_id;
-            
-            // แยกตัวอักษรและตัวเลขออกจากรหัสล่าสุด
-            let lastLetterPart = lastUserId.substring(0, 1); // ตัวอักษร
-            let lastNumberPart = parseInt(lastUserId.substring(1), 10); // ตัวเลข
-
-            if(lastNumberPart < 999){
-                lastNumberPart += 1;
-            }else{
-                lastNumberPart = 1;
-                if(lastLetterPart < 'Z'){
-                    lastLetterPart = String.fromCharCode(lastLetterPart.charCodeAt(0) + 1);
-                }else{
-                    throw new Error('Reached maximum ID value');
-                }
+        if (lastNumberPart < 999) {
+            lastNumberPart += 1;
+        } else {
+            lastNumberPart = 1;
+            if (lastLetterPart < 'Z') {
+                lastLetterPart = String.fromCharCode(lastLetterPart.charCodeAt(0) + 1);
+            } else {
+                throw new Error('Reached maximum ID value');
             }
-
-            // สร้างรหัสใหม่
-            newUserId = `${lastLetterPart}${lastNumberPart.toString().padStart(3, '0')}`;
         }
 
-        connection.execute(`INSERT INTO users(User_id ,National_ID ,User_prefix ,User_Fname ,User_Lname ,User_gender ,User_Date_Birth ,User_age ,User_phone_num ,User_email ,User_status ,User_Image ,User_file ,created_at ,update_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,? ,? ,? ,? ,?);`,
-            [
-                newUserId, National_ID, User_prefix, User_Fname, User_Lname, User_gender, User_Date_Birth, User_age, phone_num, User_email ,User_status ,User_Image ,User_file ,now ,now
-            ]
-        );
-
-        console.log("Insert successfully");
-        res.status(201).send('User register successfully');
-
-    }catch (err){
-        res.status(500).json({message :err.messages})
+        newUserId = `${lastLetterPart}${lastNumberPart.toString().padStart(3, '0')}`;
     }
-    
-}
+
+    return newUserId;
+};
+
+exports.CreateUser = async (req, res) => {
+    try {
+        // สร้าง user_id ใหม่
+        const newUserId = await generateUserId();
+
+        // เพิ่ม user_id ไปยัง req เพื่อใช้ใน middleware
+        req.User_id = newUserId;
+
+        // เรียกใช้ uploadMiddleware
+        uploadMiddleware(req, res, async (err) => {
+            if (err) {
+                return res.status(400).send('Error uploading files: ' + err.message);
+            }
+
+            
+
+            const { National_ID, User_prefix, User_Fname, User_Lname, User_gender, User_Date_Birth, User_age, phone_num, User_email, User_status, project_id_fk } = req.body;
+            const User_Image = req.files['User_Image'] ? req.files['User_Image'][0].filename : null;
+            const User_file = req.files['User_file'] ? req.files['User_file'][0].filename : null;
+
+            if (!National_ID || !User_prefix || !User_Fname || !User_Lname || !User_gender || !User_Date_Birth
+                || !User_age || !phone_num || !User_email || !User_status || !User_Image || !User_file || !project_id_fk) {
+                return res.status(400).send('Missing required fields');
+            }
+
+            const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+            try {
+                await connection.execute(`INSERT INTO users(User_id, National_ID, User_prefix, User_Fname, User_Lname, User_gender, User_Date_Birth, User_age, User_phone_num, User_email, User_status, User_Image, User_file, created_at, update_at, project_id_fk) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+                    [
+                        newUserId, National_ID, User_prefix, User_Fname, User_Lname, User_gender, User_Date_Birth, User_age, phone_num, User_email, User_status, User_Image, User_file, now, now, project_id_fk
+                    ]
+                );
+
+                console.log("Insert successfully");
+                res.status(201).send('User registered successfully');
+
+            } catch (err) {
+                res.status(500).json({ message: err.message });
+            }
+        });
+    } catch (err) {
+        res.status(500).send('An error occurred: ' + err.message);
+    }
+};
 
 exports.getUsers = async(req,res) =>{
 
@@ -74,10 +97,10 @@ exports.getUsers = async(req,res) =>{
 }
 
 exports.getUser = async(req,res) =>{
-    const userId = req.params.id;
+    const National_ID = req.params.id;
 
     try {
-        const [rows] = await connection.execute('SELECT * FROM users WHERE User_id = ?', [userId]);
+        const [rows] = await connection.execute('SELECT User_id, User_prefix, User_Fname, User_Lname, User_gender, User_Date_Birth, User_age, User_phone_num, User_email, User_status, User_Image, User_file  FROM users WHERE National_ID = ?', [National_ID]);
         if (rows.length > 0) {
             res.status(200).json(rows[0]);
         } else {

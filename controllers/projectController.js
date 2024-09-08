@@ -1,5 +1,6 @@
 const  connection  = require("../db.config");
 const multer = require('multer');
+const path = require('path'); // เพิ่มบรรทัดนี้เพื่อเรียกใช้งานโมดูล path
 const fs = require('fs');
 // const moment = require('moment'); // ใช้ moment.js สำหรับจัดการวันที่
 const storage = multer.diskStorage({
@@ -16,6 +17,15 @@ const storage = multer.diskStorage({
     }
 })
 const upload = multer({storage})
+
+
+
+// ฟังก์ชันสำหรับลบไฟล์
+const deleteFile = (filePath) => {
+    if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+    }
+};
 
 exports.createProject = [
     upload.single('ProjectFile'), // ใช้ multer middleware
@@ -78,11 +88,25 @@ exports.deleteProject = async (req, res) => {
     }
 
     try {
+        const [rows] = await connection.execute('SELECT project_file FROM projects WHERE project_id = ?', [project_id]);
+
+
+        if (rows.affectedRows === 0) {
+            return res.status(404).send('Project not found');
+        }
+
+        const projectFile = rows[0].project_file;
+        const filePath = path.join('uploads', 'ProjectFile', projectFile);
+
+            // ลบไฟล์
+            deleteFile(filePath);
+
         const [result] = await connection.execute('DELETE FROM projects WHERE project_id = ?', [project_id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).send('Project not found');
         }
+
 
         console.log("Successfully deleted");
         res.status(200).send('Successfully deleted');
@@ -153,6 +177,21 @@ exports.getProjects = async (req, res) => {
         res.status(500).send('An error occurred while retrieving projects');
     }
 }
+
+exports.nonEndProject = async(req, res) => {
+    try {
+        const [projects] = await connection.query(`
+            SELECT project_id, project_name, project_start_date, project_expiration_date, project_file
+            FROM projects 
+            WHERE project_expiration_date > NOW()
+            ORDER BY project_start_date DESC
+        `);
+        res.json(projects);
+    } catch (err) {
+        console.error('Error fetching projects:', err);
+        res.status(500).send('Error fetching projects.');
+    }
+};
 
 // exports.applyForProject = async (req, res) => {
 //     const { projectId } = req.body; // ดึง project_id จากคำขอ

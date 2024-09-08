@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Project</title>
+</head>
+<body>
+    <h1>Apply for Project</h1>
+    <form id="UserForm" enctype="multipart/form-data">
+        <input type="hidden" id="project_id_fk" name="project_id_fk">
+
+        <!-- ฟิลด์อื่นๆ ในฟอร์ม -->
+        <label for="National_ID">National ID:</label>
+        <input type="text" id="National_ID" name="National_ID" required>
+        <br>
+        <label for="User_prefix">Prefix:</label>
+        <input type="text" id="User_prefix" name="User_prefix" required>
+        <br>
+        <label for="User_Fname">First Name:</label>
+        <input type="text" id="User_Fname" name="User_Fname" required>
+        <br>
+        <label for="User_Lname">Last Name:</label>
+        <input type="text" id="User_Lname" name="User_Lname" required>
+        <br>
+        <label for="User_gender">Gender:</label>
+        <input type="text" id="User_gender" name="User_gender" required>
+        <br>
+        <label for="User_Date_Birth">Date of Birth:</label>
+        <input type="date" id="User_Date_Birth" name="User_Date_Birth" required>
+        <br>
+        <label for="User_age">Age:</label>
+        <input type="number" id="User_age" name="User_age" required>
+        <br>
+        <label for="phone_num">Phone Number:</label>
+        <input type="text" id="phone_num" name="phone_num" required>
+        <br>
+        <label for="User_email">Email:</label>
+        <input type="email" id="User_email" name="User_email" required>
+        <br>
+        <label for="User_status">Status:</label>
+        <input type="text" id="User_status" name="User_status" required>
+        <br>
+        <label for="User_Image">Image:</label>
+        <input type="file" id="User_Image" name="User_Image" required>
+        <br>
+        <label for="User_file">File:</label>
+        <input type="file" id="User_file" name="User_file" required>
+        <br>
+        <button type="submit">สมัคร</button>
+    </form>
+
+    <script>
+        // Set project_id_fk hidden field from localStorage
+        document.getElementById('project_id_fk').value = localStorage.getItem('project_id') || '';
+        
+        // Optional: Clear project_id from localStorage after use
+        // localStorage.removeItem('project_id');
+
+        console.log('Project ID:', document.getElementById('project_id_fk').value);
+        
+        
+
+        document.getElementById('UserForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            // สร้าง FormData object
+            const formData = new FormData();
+            
+            formData.append('National_ID', document.getElementById('National_ID').value);
+            formData.append('User_prefix', document.getElementById('User_prefix').value);
+            formData.append('User_Fname', document.getElementById('User_Fname').value);
+            formData.append('User_Lname', document.getElementById('User_Lname').value);
+            formData.append('User_gender', document.getElementById('User_gender').value);
+            formData.append('User_Date_Birth', document.getElementById('User_Date_Birth').value);
+            formData.append('User_age', document.getElementById('User_age').value);
+            formData.append('phone_num', document.getElementById('phone_num').value);
+            formData.append('User_email', document.getElementById('User_email').value);
+            formData.append('User_status', document.getElementById('User_status').value);
+            formData.append('User_Image', document.getElementById('User_Image').files[0]);
+            formData.append('User_file', document.getElementById('User_file').files[0]);
+            formData.append('project_id_fk', document.getElementById('project_id_fk').value);
+
+            // ตรวจสอบข้อมูลใน FormData
+    for (let pair of formData.entries()) {
+        console.log(pair[0]+ ', ' + pair[1]); 
+    }
+
+        
+            try {
+                const response = await fetch('/api/user/create', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('Application submitted successfully!');
+                    window.location.href = '/users/project'; // Redirect or update as needed
+                } else {
+                    alert('Failed to submit application: ' + await response.text());
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

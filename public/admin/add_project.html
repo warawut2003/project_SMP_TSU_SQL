@@ -35,6 +35,12 @@
             event.preventDefault();
 
             const accessToken = localStorage.getItem('accessToken');
+
+            if (!accessToken) {
+                alert('Access token not found. Please login again.');
+                window.location.href = '/smp/sci/tsu'; // Redirect to login page
+                return;
+            }
             // สร้าง FormData object
             const formData = new FormData();
             formData.append('ProjectName', document.getElementById('projectName').value);

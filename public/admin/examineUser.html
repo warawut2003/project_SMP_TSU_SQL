@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User Status</title>
+</head>
+<body>
+    <h1>Edit User Status</h1>
+    <form id="UserForm">
+
+        <!-- การแสดงผลรูปภาพ -->
+        <label for="User_Image">รูปภาพผู้ใช้:</label>
+        <img id="User_Image_display" src="" alt="User Image" style="max-width: 500px; max-height: 500px;">
+        <br>
+
+        <label for="User_id ">รหัสผู้สมัคร:</label>
+        <input type="text" id="User_id" name="User_id">
+        <br>
+        <!-- ฟิลด์อื่นๆ ในฟอร์ม แต่ไม่สามารถแก้ไขได้ -->
+        <label for="National_ID">รหัสบัตรประชาชน:</label>
+        <input type="text" id="National_ID" name="National_ID" readonly>
+        <br>
+        <label for="User_prefix">คำนำหน้าชื่อ:</label>
+        <input type="text" id="User_prefix" name="User_prefix" readonly>
+        <br>
+        <label for="User_Fname">ชื่อ:</label>
+        <input type="text" id="User_Fname" name="User_Fname" readonly>
+        <br>
+        <label for="User_Lname">นามสกุล:</label>
+        <input type="text" id="User_Lname" name="User_Lname" readonly>
+        <br>
+        <label for="User_gender">เพศ:</label>
+        <input type="text" id="User_gender" name="User_gender" readonly>
+        <br>
+        <label for="User_Date_Birth">วันเดือนปีเกิด:</label>
+        <input type="date" id="User_Date_Birth" name="User_Date_Birth" readonly>
+        <br>
+        <label for="User_age">อายุ:</label>
+        <input type="number" id="User_age" name="User_age" readonly>
+        <br>
+        <label for="phone_num">เบอร์โทรศัพน์:</label>
+        <input type="text" id="phone_num" name="phone_num" readonly>
+        <br>
+        <label for="User_email">Email:</label>
+        <input type="email" id="User_email" name="User_email" readonly>
+        <br>
+
+        
+
+        
+       
+
+         <!-- การแสดงผลไฟล์เอกสาร -->
+         <label for="User_file">ไฟล์เอกสาร:</label>
+         <a id="User_file_display" href="" target="_blank"></a>
+         <br>
+
+        <!-- ฟิลด์ที่สามารถแก้ไขได้ -->
+        <label for="User_status">สถานะ:</label>
+        <select id="User_status" name="User_status">
+            <option value="รอการตรวจสอบ">รอการตรวจสอบ</option>
+            <option value="เอกสารครบถ้วน">เอกสารครบถ้วน</option>
+            <option value="เอกสารไม่ครบ">เอกสารไม่ครบ</option>
+        </select>
+        <br>
+
+        <button type="submit">บันทึกการเปลี่ยนแปลง</button>
+    </form>
+
+    <script>
+        // Retrieve token from localStorage
+        const accessToken = localStorage.getItem('accessToken');
+
+        let ProjectID ='';
+        // Function to load user data
+        async function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userID = urlParams.get('id');
+            console.log(userID);
+            try {
+                const response = await fetch(`/api/admin/get/user/${userID}`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+
+                // Set form fields to fetched data
+                document.getElementById('User_id').value = data.User_id;
+                document.getElementById('National_ID').value = data.National_ID;
+                document.getElementById('User_prefix').value = data.User_prefix;
+                document.getElementById('User_Fname').value = data.User_Fname;
+                document.getElementById('User_Lname').value = data.User_Lname;
+                document.getElementById('User_gender').value = data.User_gender;
+                document.getElementById('User_Date_Birth').value = data.User_Date_Birth;
+                document.getElementById('User_age').value = data.User_age;
+                document.getElementById('phone_num').value = data.User_phone_num;
+                document.getElementById('User_email').value = data.User_email;
+                document.getElementById('User_status').value = data.User_status;
+
+                ProjectID = data.project_id_fk;
+                // Set image and file links
+                document.getElementById('User_Image_display').src = `/uploads/User/images/${data.User_id}/${data.User_Image}`; // URL ของรูปภาพ
+                document.getElementById('User_file_display').href = `/uploads/User/documents/${data.User_id}/${data.User_file}`; // URL ของไฟล์เอกสาร
+                document.getElementById('User_file_display').textContent = data.User_file; // แสดงชื่อไฟล์เอกสาร
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        loadUserData(); // Call this function to load data when the page loads
+
+        document.getElementById('UserForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            // สร้าง FormData object และส่งเฉพาะ Status
+            const formData = new FormData();
+            const statusValue = document.getElementById('User_status').value;
+            
+            console.log(statusValue);
+            console.log(ProjectID);
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const userID = urlParams.get('id');
+            
+            try {
+                const response = await fetch(`/api/admin/update/user/${userID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                User_status: statusValue
+            })
+                });
+
+                
+
+                if (response.ok) {
+                    alert('Status updated successfully!');
+                    window.location.href = `/admin/list/users?id=${ProjectID}`; // Redirect or update as needed
+                } else {
+                    alert('Failed to update status: ' + await response.text());
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

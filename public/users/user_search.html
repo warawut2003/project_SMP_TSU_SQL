@@ -29,9 +29,8 @@
             
             if (response.ok) {
                 const userData = await response.json();
-                resultDiv.innerHTML = `
+                let formHtml = `
                     <h2>ข้อมูลผู้ใช้</h2>
-                    <p><strong>เลขบัตรประชาชน:</strong> ${userData.National_ID}</p>
                     <p><strong>คำนำหน้า:</strong> ${userData.User_prefix}</p>
                     <p><strong>ชื่อ:</strong> ${userData.User_Fname}</p>
                     <p><strong>นามสกุล:</strong> ${userData.User_Lname}</p>
@@ -44,6 +43,45 @@
                     <p><strong>ชื่อไฟล์ภาพ:</strong> ${userData.User_Image}</p>
                     <p><strong>ชื่อไฟล์เอกสาร:</strong> ${userData.User_file}</p>
                 `;
+                if (userData.User_status === 'เอกสารไม่ครบ') {
+                    formHtml += `
+                        <h3>อัปโหลดไฟล์เอกสารใหม่:</h3>
+                        <form id="uploadForm">
+                            <input type="file" id="newFile" name="newFile" required>
+                            <br><br>
+                            <button type="submit">อัปโหลด</button>
+                        </form>
+                    `;
+                }
+
+                resultDiv.innerHTML = formHtml;
+
+                if (userData.User_status === 'เอกสารไม่ครบ') {
+                    document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+                        event.preventDefault(); // หยุดการรีเฟรชหน้าเว็บ
+
+                        const formData = new FormData();
+                        const fileInput = document.getElementById('newFile');
+                        formData.append('User_Flie', fileInput.files[0]);
+
+                        try {
+                            const uploadResponse = await fetch(`/api/user/upload/${userData.User_id}`, {
+                                method: 'PUT',
+                                body: formData
+                            });
+
+                            if (uploadResponse.ok) {
+                                alert('ไฟล์ถูกอัปโหลดเรียบร้อยแล้ว!');
+                                location.reload(); // รีเฟรชหน้าเว็บเพื่อแสดงผลการเปลี่ยนแปลง
+                            } else {
+                                alert('การอัปโหลดไฟล์ล้มเหลว: ' + await uploadResponse.text());
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert('เกิดข้อผิดพลาด: ' + error.message);
+                        }
+                    });
+                }
             } else {
                 resultDiv.innerHTML = '<p>ไม่พบข้อมูลผู้ใช้ที่ตรงกับเลขบัตรประชาชนที่ระบุ</p>';
             }

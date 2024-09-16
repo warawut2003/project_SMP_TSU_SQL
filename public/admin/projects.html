@@ -88,7 +88,7 @@
                         row.insertCell(1).textContent = project.project_name;
                         row.insertCell(2).textContent = formatDate(project.project_start_date);
                         row.insertCell(3).textContent = formatDate(project.project_expiration_date);
-                        row.insertCell(4).innerHTML = `<a href="/uploads/ProjectFile/${project.project_file}" download>Download</a>`;
+                        row.insertCell(4).innerHTML = `<a href="/uploads/ProjectFile/${project.project_file}" download>${project.project_file}</a>`;
 
                         const actionsCell = row.insertCell(5);
                         actionsCell.innerHTML = `
@@ -112,7 +112,7 @@
         }
 
         function editProject(projectId) {
-            window.location.href = `/admin/project/edit/${projectId}`;
+            window.location.href = `/admin/project/edit/?id=${projectId}`;
         }
 
         async function deleteProject(projectId) {

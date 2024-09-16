@@ -2,41 +2,32 @@ const  connection  = require("../db.config");
 const multer = require('multer');
 const path = require('path'); // เพิ่มบรรทัดนี้เพื่อเรียกใช้งานโมดูล path
 const fs = require('fs');
+
+
+
 // const moment = require('moment'); // ใช้ moment.js สำหรับจัดการวันที่
-const storage = multer.diskStorage({
-    destination: function (req,file,cb) {
-        const uploadDir = '/Project/system_recruitment_TSU_SMP/uploads/ProjectFile';
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        cb(null, uploadDir);
-    },
-    filename : function (req,file,cb){
-        const decodedFileName = Buffer.from(file.originalname, 'latin1').toString('utf8');
-        cb(null,decodedFileName);
-    }
-})
-const upload = multer({storage})
+
 
 
 
 // ฟังก์ชันสำหรับลบไฟล์
 const deleteFile = (filePath) => {
-    if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-    }
+    return new Promise((resolve, reject) => {
+        fs.unlink(filePath, (err) => {
+            if (err) reject(err);
+            resolve();
+        });
+    });
 };
 
-exports.createProject = [
-    upload.single('ProjectFile'), // ใช้ multer middleware
-    async (req, res) => {
+exports.createProject = async (req, res) => {
         const { ProjectName, Openday, Turnoffday } = req.body;
         const ProjectFile = req.file ? req.file.filename : null;// รับชื่อไฟล์
 
         
 
         // ตรวจสอบความครบถ้วนของข้อมูล
-        if (!ProjectName || !Openday || !Turnoffday || !ProjectFile) {
+        if (!ProjectName || !Openday || !Turnoffday ) {
             return res.status(400).send('Missing required fields');
         }
 
@@ -78,14 +69,16 @@ exports.createProject = [
             console.error(err);
             res.status(500).send('An error occurred adding');
         }
-    }
-];
+    };
+
 exports.deleteProject = async (req, res) => {
     const { project_id } = req.params;
 
     if (!project_id) {
         return res.status(400).send('Project ID is required');
     }
+
+    
 
     try {
         const [rows] = await connection.execute('SELECT project_file FROM projects WHERE project_id = ?', [project_id]);
@@ -115,18 +108,44 @@ exports.deleteProject = async (req, res) => {
         res.status(500).send('An error occurred while deleting');
     }
 }
+
 exports.updateProject = async (req, res) => {
     const { project_id } = req.params;
-    const { ProjectName, Openday, Turnoffday, ProjectFile } = req.body;
+    const { ProjectName, Openday, Turnoffday } = req.body;
 
     if (!project_id) {
         return res.status(400).send('Project ID is required');
     }
 
     try {
+        // ตรวจสอบว่าโครงการนี้มีอยู่หรือไม่และดึงข้อมูลไฟล์เก่า
+        const [project] = await connection.execute(
+            `SELECT project_file FROM projects WHERE project_id = ?`, [project_id]
+        );
+
+        if (project.length === 0) {
+            return res.status(404).send('Project not found');
+        }
+
+        let newFileName = project[0].project_file; // ใช้ชื่อไฟล์เก่าตั้งต้น
+
+        // ถ้ามีการอัปโหลดไฟล์ใหม่
+        if (req.file) {
+            const oldFilePath = path.join(__dirname, '..', 'uploads', 'ProjectFile', project[0].project_file);
+
+            // ลบไฟล์เก่าถ้ามี
+            if (fs.existsSync(oldFilePath)) {
+                fs.unlinkSync(oldFilePath); // ลบไฟล์เก่า
+            }
+
+            // ใช้ชื่อไฟล์ใหม่ (ProjectFile.filename มาจาก Multer)
+            newFileName = req.file.filename;
+        }
+
+        // ทำการอัปเดตข้อมูลโครงการในฐานข้อมูล
         const [result] = await connection.execute(
             `UPDATE projects SET project_name = ?, project_start_date = ?, project_expiration_date = ?, project_file = ? WHERE project_id = ?`,
-            [ProjectName, Openday, Turnoffday, ProjectFile, project_id]
+            [ProjectName, Openday, Turnoffday, newFileName, project_id]
         );
 
         if (result.affectedRows === 0) {
@@ -139,7 +158,7 @@ exports.updateProject = async (req, res) => {
         console.error(err);
         res.status(500).send('An error occurred while updating');
     }
-}
+};
 exports.getProject = async (req, res) => {
     const { project_id } = req.params;
 

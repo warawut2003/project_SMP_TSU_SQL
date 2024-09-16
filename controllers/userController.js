@@ -1,5 +1,6 @@
 const  connection  = require("../db.config");
-
+const fs = require('fs');
+const path = require('path');
 
 
 const { uploadMiddleware } = require('../middlewares/upload');
@@ -116,6 +117,25 @@ exports.UpdateUser =  async(req,res) =>{
     const {User_Flie} = req.body;
     const now = new Date().toISOString().slice(0,19).replace('T', ' ');
 
+    console.log(User_Flie);
+    console.log(req.params.id);
+
+    // ดึงข้อมูลไฟล์เก่าจากฐานข้อมูล
+    const [rows] = await connection.execute("SELECT User_file FROM users WHERE User_id=?", [req.params.id]);
+
+    if (rows.length > 0) {
+        const oldFile = rows[0].User_file;
+        const oldFilePath = path.join(__dirname, 'uploads/User/documents', req.params.id, oldFile);
+
+        // ตรวจสอบว่ามีไฟล์เก่าอยู่หรือไม่
+        if (fs.existsSync(oldFilePath)) {
+            // ลบไฟล์เก่า
+            fs.unlink(oldFilePath, (err) => {
+                if (err) console.error('Error deleting old file:', err);
+            });
+        }
+    }
+
     connection.execute("UPDATE users SET User_file=?, update_at=? WHERE User_id=?",
         [User_Flie, now, req.params.id]
     ).then(() =>{
@@ -126,6 +146,10 @@ exports.UpdateUser =  async(req,res) =>{
         res.status(500).send("Error updating user.");
     });
 }
+
+
+
+
 
 exports.DeleteUser = async(req,res) =>{
     connection.execute("DELETE FROM users WHERE User_id =?;",

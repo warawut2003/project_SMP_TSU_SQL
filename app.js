@@ -26,40 +26,46 @@ const ProjectRoute = require('./routes/project');
 app.use('/api/project',ProjectRoute);
 
 app.get('/smp/sci/tsu', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/admin', 'login.html')); // ชี้ไปยังไฟล์ HTML ของคุณ
+    res.sendFile(path.join(__dirname, 'public/admin', 'login.html')); //Login
 });
 
 app.get('/admin/projects', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/admin', 'projects.html')); // ชี้ไปยังไฟล์ HTML ของคุณ
+    res.sendFile(path.join(__dirname, 'public/admin', 'projects.html')); // แสดงโครงการทั้งหมด
 });
 
 app.get('/admin/add/project', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/admin', 'add_project.html')); // ชี้ไปยังไฟล์ HTML ของคุณ
-});
-
-app.get('/users/project', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/users', 'UserScreen.html')); // ชี้ไปยังไฟล์ HTML ของคุณ
-});
-
-app.get('/users/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/users', 'user_register.html')); // ชี้ไปยังไฟล์ HTML ของคุณ
-});
-
-app.get('/user/search', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/users', 'user_search.html')); // ชี้ไปยังไฟล์ HTML ของคุณ
-});
-
-app.get('/user/search', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/users', 'user_search.html')); // ชี้ไปยังไฟล์ HTML ของคุณ
+    res.sendFile(path.join(__dirname, 'public/admin', 'add_project.html')); // เพิ่มโครงการ
 });
 
 app.get('/admin/project/view', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/admin', 'detail_project.html'));
+    res.sendFile(path.join(__dirname, 'public/admin', 'detail_project.html')); // เพิ่มดูรายละเอียดโครงการ
 });
 
 app.get('/admin/project/edit', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/admin', 'edit_project.html'));
+    res.sendFile(path.join(__dirname, 'public/admin', 'update_project.html')); //แก้ไข้โครงการ
 });
+
+app.get('/admin/list/users', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/admin', 'Users.html')); // ตรวจสอบรายชื่อผู้สมัคร
+});
+
+app.get('/admin/user/examine', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/admin', 'examineUser.html')); // รายละเอียดผุ้สมัคร
+});
+
+
+app.get('/users/project', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/users', 'UserProject.html')); // แสดงโครงการหน้า User
+});
+
+app.get('/users/register', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/users', 'user_register.html')); // สมัครเข้าโครงการ
+});
+
+app.get('/user/search', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/users', 'user_search.html')); // ค้นหาผู้สมัครหน้า user
+});
+
 
 // ให้บริการไฟล์จากโฟลเดอร์ uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

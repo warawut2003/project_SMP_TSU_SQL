@@ -53,6 +53,7 @@
             <button onclick="editProject()">Edit</button>
             <button onclick="deleteProject()">Delete</button>
             <button onclick="window.location.href = '/admin/projects';">Back to List</button>
+            <button onclick="viewUsers()">ตรวจสอบรายชื่อ</button>
         </div>
     </div>
 
@@ -152,6 +153,17 @@
             } catch (error) {
                 console.error('Error deleting project:', error);
                 alert('Error deleting project: ' + error.message);
+            }
+        }
+
+        function viewUsers() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectId = urlParams.get('id');
+
+            if (projectId) {
+                window.location.href = `/admin/list/users?id=${projectId}`;
+            } else {
+                alert('Project ID not found.');
             }
         }
 

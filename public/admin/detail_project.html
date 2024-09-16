@@ -48,7 +48,7 @@
         <p><label>Project ID:</label> <span id="projectId"></span></p>
         <p><label>Start Date:</label> <span id="startDate"></span></p>
         <p><label>End Date:</label> <span id="endDate"></span></p>
-        <p><label>File:</label> <span id="projectFile"></span></p>
+        <p><label>File:</label> <a id="projectFileLink" href="#" target="_blank">Download File</a></p>
         <div class="buttons">
             <button onclick="editProject()">Edit</button>
             <button onclick="deleteProject()">Delete</button>
@@ -91,7 +91,8 @@
                     document.getElementById('projectId').textContent = project.project_id;
                     document.getElementById('startDate').textContent = project.project_start_date;
                     document.getElementById('endDate').textContent = project.project_expiration_date;
-                    document.getElementById('projectFile').textContent = project.project_file;
+                    document.getElementById('projectFileLink').textContent = project.project_file;
+                    document.getElementById('projectFileLink').href = `/uploads/ProjectFile/${project.project_file}`;  // ตั้งค่าลิงก์ไฟล์
                 } else if (response.status === 404) {
                     alert('Project not found.');
                     window.location.href = '/admin/projects';

@@ -1,83 +1,131 @@
+
+.header-section {
+    text-align: center;
+    margin-bottom: 20px;
+    border: 2px solid #8b4513; /* Border */
+    width: 80%; /* Adjust width as needed */
+    background-color: #f0dbc0; /* Background color */
+    padding: 10px; /* Add padding for better appearance */
+    position: fixed; /* Fix position at the top */
+    top: 0; /* Align to the top */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Center horizontally */
+    z-index: 1000; /* Ensure it stays on top of other content */
+}
+.header-section h1 {
+    font-size: 24px;
+    color: #8b4513;
+    margin: 0;
+    
+    padding: 10px; /* Padding */
+    border-radius: 5px; /* Rounded corners */
+   
+}
+
+.header-section p {
+    font-size: 14px;
+    color: #555;
+    margin: 5px 0;
+
+}
+
+/* General Body Styles */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f9f9f9;
+    background-color: #fbfbfa;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     margin: 0;
 }
 
-.header {
+/* Header Section */
+.header-section {
     text-align: center;
-    background-color: #fff;
-    padding: 20px;
-    border-bottom: 1px solid #ddd;
-}
-
-.header img {
-    width: 100%;
-    max-width: 1000px;
-}
-
-.login-form-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 80vh;
-}
-
-.login-form {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    text-align: left;
-    border: 1px solid #ddd;
-}
-
-h2 {
-    color: #4A4A4A;
     margin-bottom: 20px;
+}
+
+.header-section img {
+    max-width: 400px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.header-section h1 {
+    font-size: 24px;
+    color: #8b4513;
+    margin: 0;
+}
+
+.header-section p {
+    font-size: 14px;
+    color: #555;
+    margin: 5px 0;
+}
+
+/* Container for the Login Form */
+.login-container {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: left;
+}
+
+/* Title for the Form Section */
+.login-container h2 {
     font-size: 18px;
-    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: left;
 }
 
-label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-input {
+/* Input Fields Styling */
+input[type="text"],
+input[type="password"] {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 5px;
     font-size: 16px;
+    background-color: #f8e3e3;
+    color: #333;
+    box-sizing: border-box;
 }
 
+/* Label Styling */
+label {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Login Button */
 button {
     width: 100%;
-    background-color: #4CAF50;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    padding: 10px;
     font-size: 16px;
-    transition: background-color 0.3s;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
 button:hover {
     background-color: #45a049;
 }
 
-input::placeholder {
-    color: #aaa;
-}
-
-input:focus {
-    border-color: #4CAF50;
-    outline: none;
+/* Adjustments for container and form alignment */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }

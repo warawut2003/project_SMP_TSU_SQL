@@ -15,7 +15,7 @@ router.post("/", async(req,res)=>{
 router.post("/create",CreateUser);
 router.get("/",getUsers);
 router.get("/:id",getUser);
-router.put("/upload/:id",uploadFile.single('newFile'),UpdateUser);
+router.put("/upload/:id",uploadFile.single('User_Flie'),UpdateUser);
 router.delete("/delete/:id",DeleteUser)
 
 module.exports = router;

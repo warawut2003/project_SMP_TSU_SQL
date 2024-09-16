@@ -66,6 +66,10 @@ app.get('/user/search', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/users', 'user_search.html')); // ค้นหาผู้สมัครหน้า user
 });
 
+app.get('/homepage', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'Homepage.html')); // แสดงหน้าหลัก
+});
+
 
 // ให้บริการไฟล์จากโฟลเดอร์ uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

@@ -114,18 +114,29 @@ exports.getUser = async(req,res) =>{
 }
 
 exports.UpdateUser =  async(req,res) =>{
-    const {User_Flie} = req.body;
+    
     const now = new Date().toISOString().slice(0,19).replace('T', ' ');
 
-    console.log(User_Flie);
-    console.log(req.params.id);
+    if (!req.file) {
+        return res.status(400).send("No file uploaded.");
+    }
+
+    const User_Flie = req.file.filename; // ตั้งค่า User_Flie เป็นชื่อไฟล์ที่อัปโหลด
+    
+    
+    // ตรวจสอบว่าค่าของ User_Flie เป็น undefined หรือไม่
+    if (User_Flie === undefined) {
+        return res.status(400).send("File name is undefined.");
+    }
+
+    
 
     // ดึงข้อมูลไฟล์เก่าจากฐานข้อมูล
     const [rows] = await connection.execute("SELECT User_file FROM users WHERE User_id=?", [req.params.id]);
 
     if (rows.length > 0) {
         const oldFile = rows[0].User_file;
-        const oldFilePath = path.join(__dirname, 'uploads/User/documents', req.params.id, oldFile);
+        const oldFilePath = path.join(__dirname, '..', 'uploads', 'User', 'documents', req.params.id, oldFile);
 
         // ตรวจสอบว่ามีไฟล์เก่าอยู่หรือไม่
         if (fs.existsSync(oldFilePath)) {
@@ -136,8 +147,8 @@ exports.UpdateUser =  async(req,res) =>{
         }
     }
 
-    connection.execute("UPDATE users SET User_file=?, update_at=? WHERE User_id=?",
-        [User_Flie, now, req.params.id]
+    connection.execute("UPDATE users SET User_status=?, User_file=?, update_at=? WHERE User_id=?",
+        ['รอการตรวจสอบ',User_Flie, now, req.params.id]
     ).then(() =>{
         console.log('Update Successfully');
         res.status(200).send("Update Successfully.");

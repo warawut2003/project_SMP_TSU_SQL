@@ -5,15 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-    <link rel="stylesheet" href="../CSS/login.css">
+    <link rel="stylesheet" href="/CSS/login.css">
     <!-- CSS styles ใส่ในไฟล์นี้หรือ external CSS -->
 </head>
 <body>
-    <div class="login-form">
-        <h2>Login</h2>
+    <div class="login-container">
+        <h2>สำหรับเจ้าหน้าที่</h2>
         <form id="loginForm">
-            <input type="text" id="username" placeholder="Username" required>
-            <input type="password" id="password" placeholder="Password" required>
+            <label for="username">Username :</label>
+            <input type="text" id="username" placeholder="ชื่อผู้ใช้" required>
+
+            <label for="password">Password :</label>
+            <input type="password" id="password" placeholder="รหัสผ่าน" required>
+
             <button type="submit">Login</button>
         </form>
     </div>
@@ -38,6 +42,10 @@
                 alert('Login successful!');
                 localStorage.setItem('accessToken', data.accessToken);
                 localStorage.setItem('refreshToken', data.refreshToken);
+
+
+                // Save user details
+                localStorage.setItem('userName', data.user.admin_Fname + ' ' + data.user.admin_Lname);
                 window.location.href = '/admin/projects';
             } else {
                 alert('Login failed! Please check your username or password.');

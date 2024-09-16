@@ -1,6 +1,7 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const moment = require('moment-timezone');
 
 // สร้าง storage engine สำหรับจัดเก็บไฟล์เอกสารและภาพ
 const storage = multer.diskStorage({
@@ -16,7 +17,8 @@ const storage = multer.diskStorage({
         });
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() +'-'+ req.User_id + path.extname(file.originalname)); // ใช้ timestamp เพื่อป้องกันชื่อไฟล์ซ้ำ
+        const thaiTime = moment().tz('Asia/Bangkok').format('YYYYMMDD_HHmmss');
+        cb(null, thaiTime +'-'+ req.User_id + path.extname(file.originalname)); // ใช้ timestamp เพื่อป้องกันชื่อไฟล์ซ้ำ
     }
 });
 

@@ -68,7 +68,7 @@ exports.login = async (req,res) =>{
         if(data.length === 0){
             res.status(400).send('Admin not found');
         }else{
-            
+            const user = data[0];
             const accessToken = jwt.sign(
                 {userId : data.admin_id},
                 process.env.ACCESS_TOKEN_SECRET,
@@ -78,7 +78,7 @@ exports.login = async (req,res) =>{
                 {userId: data.admin_id},
                 process.env.REFRESH_TOKEN_SECRET
             );
-            res.json({data,accessToken, refreshToken});
+            res.json({user,accessToken, refreshToken});
         }
     }).catch((err) =>{
         console.log(err);

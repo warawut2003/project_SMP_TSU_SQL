@@ -4,40 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projects</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+    <link rel="stylesheet" href="/CSS/table_project.css">
 </head>
 <body>
-    <h1>Project List</h1>
-    <button class="button" onclick="window.location.href = '/admin/add/project';">Add Project</button>
+    <div class="header">
+        <div class="logo-container">
+            <img src="/assets/images/TSU.png" alt="TSU Logo">
+            <img src="/assets/images/SMP.png" alt="SMP Logo">
+        </div>
+        <div>
+            <h2>โครงการ วมว. - มอ.ทักษิณ</h2>
+            <p>โครงการห้องวิทยาศาสตร์ในโรงเรียนป่าพะยอมพิทยาคม โดยการกำกับดูแลมหาลับทักษิณ</p>
+        </div>
+        <div class="admin-info dropdown">
+            <span id="adminName"></span>
+            <img src="/assets/icons/admin-icon.png" alt="Admin Icon">
+            <div class="dropdown-content">
+                <a href="/admin/profile">Profile</a>
+                <a href="#" onclick="logout()">Log out</a>
+            </div>
+        </div>
+    </div>
+
+    <h2>รายการโครงการ <img src="/assets/icons/to-do-list.png" alt="Add Icon" style="height: 40px; width: 40px;"> </h2> 
+    <button class="add-button" onclick="window.location.href = '/admin/add/project';">
+        ADD
+        <img src="/assets/icons/add.png" alt="Add Icon">
+    </button>
+
     <table id="projectsTable">
         <thead>
             <tr>
-                <th>Project ID</th>
-                <th>Project Name</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>File</th>
+                <th>ลำดับ</th> <!-- New Rank column -->
+                <th>รหัสโครงการ</th>
+                <th>ชื่อโครงการ</th>
+                <th>วันเปิดรับสมัคร</th>
+                <th>วันปิดรับสมัคร</th>
                 <th>Actions</th>
-
             </tr>
         </thead>
         <tbody>
@@ -46,6 +49,13 @@
     </table>
 
     <script>
+
+         // Logout function
+         function logout() {
+            localStorage.removeItem('accessToken'); // Clear the token
+            localStorage.removeItem('userName'); // Clear the username
+            window.location.href = '/smp/sci/tsu'; // Redirect to login page after logout
+        }
         function formatDate(dateString) {
             const options = {
                 year: 'numeric',
@@ -54,10 +64,10 @@
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit',
-                hour12: false // ใช้ระบบเวลา 24 ชั่วโมง
+                hour12: false // Use 24-hour format
             };
             const date = new Date(dateString);
-            return date.toLocaleString('en-GB', options); // 'en-GB' สำหรับรูปแบบ DD-MM-YYYY HH:mm:ss
+            return date.toLocaleString('en-GB', options); // 'en-GB' for DD-MM-YYYY HH:mm:ss
         }
 
         async function fetchProjects() {
@@ -80,23 +90,21 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    // Process and display project data
                     const table = document.getElementById('projectsTable');
-                    data.forEach(project => {
+                    data.forEach((project , index)=> {
                         const row = table.insertRow();
-                        row.insertCell(0).textContent = project.project_id;
-                        row.insertCell(1).textContent = project.project_name;
-                        row.insertCell(2).textContent = formatDate(project.project_start_date);
-                        row.insertCell(3).textContent = formatDate(project.project_expiration_date);
-                        row.insertCell(4).innerHTML = `<a href="/uploads/ProjectFile/${project.project_file}" download>${project.project_file}</a>`;
-
+                        row.insertCell(0).textContent = index + 1; // Rank column
+                        row.insertCell(1).textContent = project.project_id;
+                        row.insertCell(2).textContent = project.project_name;
+                        row.insertCell(3).textContent = formatDate(project.project_start_date);
+                        row.insertCell(4).textContent = formatDate(project.project_expiration_date);
+                        
                         const actionsCell = row.insertCell(5);
                         actionsCell.innerHTML = `
-                            <button onclick="viewProject('${project.project_id}')">View</button>
-                            <button onclick="editProject('${project.project_id}')">Edit</button>
-                            <button onclick="deleteProject('${project.project_id}')">Delete</button>
+                            <span class="action-icons">
+                                <img src="/assets/icons/research.png" onclick="viewProject('${project.project_id}')" title="View">
+                            </span>
                         `;
-
                     });
                 } else {
                     throw new Error('Unauthorized or error fetching project data');
@@ -107,46 +115,13 @@
                 window.location.href = '/smp/sci/tsu'; 
             }
         }
+
         function viewProject(projectId) {
             window.location.href = `/admin/project/view/?id=${projectId}`;
         }
-
-        function editProject(projectId) {
-            window.location.href = `/admin/project/edit/?id=${projectId}`;
-        }
-
-        async function deleteProject(projectId) {
-            const confirmation = confirm("Are you sure you want to delete this project?");
-            if (!confirmation) return;
-
-            const accessToken = localStorage.getItem('accessToken');
-
-            if (!accessToken) {
-                alert('Access token not found. Please login again.');
-                window.location.href = '/smp/sci/tsu';
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/admin/delete/project/${projectId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    alert('Project deleted successfully');
-                    window.location.reload(); // Reload the page to update the table
-                } else {
-                    throw new Error('Error deleting project');
-                }
-            } catch (error) {
-                console.error('Error deleting project:', error);
-                alert('Error deleting project: ' + error.message);
-            }
-        }
+        
+        // Set admin name on page load
+        document.getElementById('adminName').textContent = localStorage.getItem('userName');
 
         fetchProjects();
     </script>

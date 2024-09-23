@@ -1,0 +1,64 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #FFEAEA;
+}
+
+td {
+    background-color: #F7F0F0;
+}
+
+.back-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 15px; /* Added margin for spacing */
+}
+
+.back-button i {
+    margin-right: 8px;
+}
+
+.back-button:hover {
+    background-color: #45a049;
+}
+
+.action-icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.action-icons img {
+    height: 35px; /* Adjust size as needed */
+    width: 35px;
+    margin-left: 10px; /* Space between icons */
+}
+
+.action-icons img:hover {
+    opacity: 0.7; /* Add some hover effect */
+}

@@ -4,9 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ค้นหาผู้ใช้ตามเลขบัตรประชาชน</title>
+    <link rel="stylesheet" href="/CSS/user_search.css">
+    <link rel="stylesheet" href="/CSS/header.css">
 </head>
 <body>
-    <h1>ค้นหาผู้ใช้ตามเลขบัตรประชาชน</h1>
+
+    <!-- Header section -->
+    <div class="header">
+        <div class="logo-container">
+            <img src="/assets/images/TSU.png" alt="TSU Logo">
+            <img src="/assets/images/SMP.png" alt="SMP Logo">
+        </div>
+        <div>
+            <h2>โครงการ วมว. - มอ.ทักษิณ</h2>
+            <p>โครงการห้องวิทยาศาสตร์ในโรงเรียนป่าพะยอมพิทยาคม โดยการกำกับดูแลมหาลับทักษิณ</p>
+        </div>
+        <div class="admin-info dropdown">
+            
+        </div>
+    </div>
+
+    <h1>ค้นหาผู้ใช้ตามเลขบัตรประชาชน <img src="/assets/icons/search.png" alt="Add Icon" style="height: 40px; width: 40px;"></h1>
     <!-- ฟอร์มค้นหาผู้ใช้ -->
     <form id="searchForm">
         <label for="nationalID">เลขบัตรประชาชน:</label>
@@ -14,78 +32,122 @@
         <button type="submit">ค้นหา</button>
     </form>
 
+    <!-- ปุ่มกลับ -->
+    <button class="back-button" onclick="goBack()">กลับ</button>
+
     <div id="result"></div>
 
     <script>
-        document.getElementById('searchForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); // หยุดการรีเฟรชหน้าเว็บ
 
-            const nationalID = document.getElementById('nationalID').value;
-            const response = await fetch(`/api/user/${nationalID}`, {
-                method: 'GET'
-            });
+        // ฟังก์ชันสำหรับกลับไปยังหน้าก่อนหน้า
+        function goBack() {
+            window.location.href = '/users/project';
+        }
 
-            const resultDiv = document.getElementById('result');
-            
-            if (response.ok) {
-                const userData = await response.json();
-                let formHtml = `
-                    <h2>ข้อมูลผู้ใช้</h2>
-                    <p><strong>คำนำหน้า:</strong> ${userData.User_prefix}</p>
-                    <p><strong>ชื่อ:</strong> ${userData.User_Fname}</p>
-                    <p><strong>นามสกุล:</strong> ${userData.User_Lname}</p>
-                    <p><strong>เพศ:</strong> ${userData.User_gender}</p>
-                    <p><strong>วันเกิด:</strong> ${userData.User_Date_Birth}</p>
-                    <p><strong>อายุ:</strong> ${userData.User_age}</p>
-                    <p><strong>เบอร์โทร:</strong> ${userData.User_phone_num}</p>
-                    <p><strong>อีเมล:</strong> ${userData.User_email}</p>
-                    <p><strong>สถานะ:</strong> ${userData.User_status}</p>
-                    <p><strong>ชื่อไฟล์ภาพ:</strong> ${userData.User_Image}</p>
-                    <p><strong>ชื่อไฟล์เอกสาร:</strong> ${userData.User_file}</p>
-                `;
-                if (userData.User_status === 'เอกสารไม่ครบ') {
-                    formHtml += `
-                        <h3>อัปโหลดไฟล์เอกสารใหม่:</h3>
-                        <form id="uploadForm">
-                            <input type="file" id="newFile" name="newFile" required>
-                            <br><br>
-                            <button type="submit">อัปโหลด</button>
-                        </form>
-                    `;
-                }
+         document.getElementById('searchForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // หยุดการรีเฟรชหน้าเว็บ
 
-                resultDiv.innerHTML = formHtml;
-
-                if (userData.User_status === 'เอกสารไม่ครบ') {
-                    document.getElementById('uploadForm').addEventListener('submit', async function(event) {
-                        event.preventDefault(); // หยุดการรีเฟรชหน้าเว็บ
-
-                        const formData = new FormData();
-                        const fileInput = document.getElementById('newFile');
-                        formData.append('User_Flie', fileInput.files[0]);
-
-                        try {
-                            const uploadResponse = await fetch(`/api/user/upload/${userData.User_id}`, {
-                                method: 'PUT',
-                                body: formData
-                            });
-
-                            if (uploadResponse.ok) {
-                                alert('ไฟล์ถูกอัปโหลดเรียบร้อยแล้ว!');
-                                location.reload(); // รีเฟรชหน้าเว็บเพื่อแสดงผลการเปลี่ยนแปลง
-                            } else {
-                                alert('การอัปโหลดไฟล์ล้มเหลว: ' + await uploadResponse.text());
-                            }
-                        } catch (error) {
-                            console.error('Error:', error);
-                            alert('เกิดข้อผิดพลาด: ' + error.message);
-                        }
-                    });
-                }
-            } else {
-                resultDiv.innerHTML = '<p>ไม่พบข้อมูลผู้ใช้ที่ตรงกับเลขบัตรประชาชนที่ระบุ</p>';
-            }
+        const nationalID = document.getElementById('nationalID').value;
+        const response = await fetch(`/api/user/${nationalID}`, {
+            method: 'GET'
         });
+
+        const resultDiv = document.getElementById('result');
+        
+        if (response.ok) {
+            const userData = await response.json();
+            let formHtml = `
+
+<div style="display: flex; flex-direction: column; align-items: center;">
+    <img src="/uploads/User/images/${userData.User_id}/${userData.User_Image}" alt="รูปภาพผู้ใช้" style="width:200px;height:200px;border-radius:50%;object-fit:cover;">
+</div>
+
+<!-- ใช้ Grid สำหรับการจัดตำแหน่งคอลัมน์ -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; width: 100%;" class="formUser">
+
+
+    <p><strong>รหัสผู้สมัคร:</strong> ${userData.User_id}</p>
+    <p></p> <!-- ช่องว่าง (empty cell) -->
+
+
+    <p><strong>ชื่อ:</strong> ${userData.User_Fname}</p>
+    <p><strong>นามสกุล:</strong> ${userData.User_Lname}</p>
+
+
+    <p><strong>เพศ:</strong> ${userData.User_gender}</p>
+    <p><strong>วันเกิด:</strong> ${userData.User_Date_Birth}</p>
+
+
+    <p><strong>อายุ:</strong> ${userData.User_age}</p>
+    <p><strong>เบอร์โทร:</strong> ${userData.User_phone_num}</p>
+
+    <p><strong>อีเมล:</strong> ${userData.User_email}</p>
+    <p><strong>สถานะ:</strong> ${userData.User_status}</p>
+
+    <p><strong>ชื่อไฟล์ภาพ:</strong> ${userData.User_Image}</p>
+    <p><strong>ชื่อไฟล์เอกสาร:</strong> ${userData.User_file}</p>
+
+</div>
+
+`;
+
+            if (userData.User_status === 'เอกสารไม่ครบ') {
+                formHtml += `
+                <form id="uploadForm" class="uploadForm">
+                    
+                    <div class="add-file-container">
+                        <label>อัปโหลดไฟล์เอกสารใหม่:</label>
+                        <button type="button" class="add-file-button" id="customFileButton">Add file</button>
+                        <input type="file" id="newFile" name="newFile" style="display: none;" required>
+                        <span id="fileName" style="margin-left: 10px;">ยังไม่ได้เลือกไฟล์</span>
+                    </div>
+                    <br><br>
+                    <button type="submit">อัปโหลด</button>
+                </form>
+                `;
+            }
+
+            resultDiv.innerHTML = formHtml;
+
+            if (userData.User_status === 'เอกสารไม่ครบ') {
+                document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+                    event.preventDefault(); // หยุดการรีเฟรชหน้าเว็บ
+
+                    const formData = new FormData();
+                    const fileInput = document.getElementById('newFile');
+                    formData.append('User_Flie', fileInput.files[0]);
+
+                    try {
+                        const uploadResponse = await fetch(`/api/user/upload/${userData.User_id}`, {
+                            method: 'PUT',
+                            body: formData
+                        });
+
+                        if (uploadResponse.ok) {
+                            alert('ไฟล์ถูกอัปโหลดเรียบร้อยแล้ว!');
+                            location.reload(); // รีเฟรชหน้าเว็บเพื่อแสดงผลการเปลี่ยนแปลง
+                        } else {
+                            alert('การอัปโหลดไฟล์ล้มเหลว: ' + await uploadResponse.text());
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('เกิดข้อผิดพลาด: ' + error.message);
+                    }
+                });
+
+                document.getElementById('customFileButton').addEventListener('click', function() {
+                    document.getElementById('newFile').click();
+                });
+
+                document.getElementById('newFile').addEventListener('change', function() {
+                    const fileName = document.getElementById('newFile').files[0]?.name || "ยังไม่ได้เลือกไฟล์";
+                    document.getElementById('fileName').textContent = fileName;
+                });
+            }
+        } else {
+            resultDiv.innerHTML = '<p>ไม่พบข้อมูลผู้ใช้ที่ตรงกับเลขบัตรประชาชนที่ระบุ</p>';
+        }
+    });
     </script>
 </body>
 </html>

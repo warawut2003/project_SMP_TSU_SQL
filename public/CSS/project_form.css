@@ -1,0 +1,143 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.form-container {
+    background-color: #F7F0F0;
+    width: 70%;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #b25e52;
+    font-size: 1.6rem;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+label {
+    flex: 1;
+    font-weight: bold;
+    color: #333;
+}
+
+input[type="text"],
+input[type="datetime-local"] {
+    flex: 3;
+    padding: 8px;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-left: 10px;
+}
+
+.add-file-container {
+    display: flex;
+    align-items: center;
+    flex: 3; /* Align with input fields */
+    margin-left: 10px; /* Space between the label and file container */
+}
+
+.add-file-button {
+    background-color: #ffcc66;
+    color: black;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px; /* Space between button and file name */
+}
+
+input[type="file"] {
+    display: none; /* Hide file input */
+}
+
+.add-file-button:hover {
+    background-color: #e6b800;
+}
+
+#fileName {
+    font-style: italic;
+    color: #666;
+}
+
+.icon {
+    margin-left: 10px;
+    width: 24px;
+    height: 24px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.submit-button {
+    background-color: #33cc33;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.submit-button:hover {
+    background-color: #28a745;
+}
+
+.cancel-button {
+    background-color: #ff6666;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.cancel-button:hover {
+    background-color: #cc0000;
+}
+
+/* input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        display: none;
+    } */
+    /* Style for the custom calendar icon */
+.icon {
+        margin-left: 10px;
+        width: 24px;
+        height: 24px;
+        cursor: pointer; /* Indicates that the icon is clickable */
+    }
+
+    #existingFileContainer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start; /* จัดลิงก์ให้อยู่ทางซ้าย */
+        margin-top: 10px;
+        margin-bottom: 10px;
+        flex: 3; /* จัดให้ขนาดของคอนเทนเนอร์เท่ากับ input field */
+    }
+    
+    #existingFileLink {
+        text-decoration: none;
+        font-size: 16px;
+        color: #007BFF; /* สีของลิงก์ดาวน์โหลด */
+        padding: 5px 10px;
+        background-color: #f0f0f0; /* สีพื้นหลังของกล่องลิงก์ */
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        display: inline-block;
+    }

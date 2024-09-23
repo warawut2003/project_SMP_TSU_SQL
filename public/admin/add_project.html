@@ -4,33 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Management</title>
+    <link rel="stylesheet" href="/CSS/header.css">
+    <link rel="stylesheet" href="/CSS/project_form.css">
+    
 </head>
 <body>
-    <h1>Project Management</h1>
 
-    <!-- Form for Adding a Project -->
-    <h2>Add a New Project</h2>
-    <form id="projectForm" enctype="multipart/form-data">
-        <label for="projectName">Project Name:</label>
-        <input type="text" id="projectName" name="projectName" required>
-        <br><br>
+    <div class="header">
+        <div class="logo-container">
+            <img src="/assets/images/TSU.png" alt="TSU Logo">
+            <img src="/assets/images/SMP.png" alt="SMP Logo">
+        </div>
+        <div>
+            <h2>โครงการ วมว. - มอ.ทักษิณ</h2>
+            <p>โครงการห้องวิทยาศาสตร์ในโรงเรียนป่าพะยอมพิทยาคม โดยการกำกับดูแลมหาลับทักษิณ</p>
+        </div>
+        <div class="admin-info dropdown">
+            <span id="adminName"></span>
+            <img src="/assets/icons/admin-icon.png" alt="Admin Icon">
+            <div class="dropdown-content">
+                <a href="/admin/profile">Profile</a>
+                <a href="#" onclick="logout()">Log out</a>
+            </div>
+        </div>
+    </div>
 
-        <label for="openDay">Open Day:</label>
-        <input type="datetime-local" id="openDay" name="openDay" required>
-        <br><br>
+    <h1>เพิ่มโครงการ</h1>
 
-        <label for="turnOffDay">Turn Off Day:</label>
-        <input type="datetime-local" id="turnOffDay" name="turnOffDay" required>
-        <br><br>
+    <div class="form-container">
+        <form id="projectForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="projectName">ชื่อ :</label>
+                <input type="text" id="projectName" name="projectName" required>
+            </div>
 
-        <label for="projectFile">Project File:</label>
-        <input type="file" id="projectFile" name="projectFile" accept=".pdf,.doc,.docx,.zip" required>
-        <br><br>
+            <div class="form-group">
+                <label for="openDay">วันเปิดรับสมัคร:</label>
+                <input type="datetime-local" id="openDay" name="openDay" required>
+                <img src="/assets/icons/schedule.png" alt="Calendar Icon" class="icon" data-input-id="openDay">
+            </div>
+            
+            <div class="form-group">
+                <label for="turnOffDay">วันหมดเขต:</label>
+                <input type="datetime-local" id="turnOffDay" name="turnOffDay" required>
+                <img src="/assets/icons/schedule.png" alt="Calendar Icon" class="icon" data-input-id="turnOffDay">
+            </div>
 
-        <button type="submit">Add Project</button>
-    </form>
+            <div class="form-group">
+                <label for="projectFile">เอกสาร :</label>
+                <div class="add-file-container">
+                    <button type="button" class="add-file-button" onclick="document.getElementById('projectFile').click()">Add file</button>
+                    <input type="file" id="projectFile" name="projectFile" accept=".pdf,.doc,.docx,.zip">
+                    <span id="fileName">ยังไม่ได้เลือกไฟล์</span> <!-- Display selected file name -->
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-button">ยืนยัน</button>
+                <button type="button" class="cancel-button" onclick="window.location.href='/admin/projects';">ยกเลิก</button>
+            </div>
+        </form>
+    </div>
 
     <script>
+
+
+
+        document.getElementById('projectFile').addEventListener('change', function() {
+            const fileName = this.files[0] ? this.files[0].name : 'ยังไม่ได้เลือกไฟล์';
+            document.getElementById('fileName').textContent = fileName;
+        });
+
         document.getElementById('projectForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
@@ -41,7 +85,7 @@
                 window.location.href = '/smp/sci/tsu'; // Redirect to login page
                 return;
             }
-            // สร้าง FormData object
+
             const formData = new FormData();
             formData.append('ProjectName', document.getElementById('projectName').value);
             formData.append('Openday', document.getElementById('openDay').value);
@@ -51,9 +95,8 @@
             try {
                 const response = await fetch('/api/admin/create/project', {
                     method: 'POST',
-                    headers : {
+                    headers: {
                         'Authorization': `Bearer ${accessToken}`,
-
                     },
                     body: formData
                 });
@@ -69,7 +112,16 @@
                 alert('An error occurred: ' + error.message);
             }
         });
+
+        document.getElementById('adminName').textContent = localStorage.getItem('userName');
+
+        
+
+        function logout() {
+            localStorage.removeItem('accessToken'); // Clear the token
+            localStorage.removeItem('userName'); // Clear the username
+            window.location.href = '/smp/sci/tsu'; // Redirect to login page after logout
+        }
     </script>
 </body>
 </html>
-

@@ -1,0 +1,234 @@
+/* General reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    
+}
+
+/* Header section */
+.header img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* Search section */
+.search-section {
+    background-color: #ffffff;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    margin-left: 150px;
+}
+
+/* ฟอร์มการค้นหา */
+#searchForm {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#searchForm label {
+    font-size: 1.2em;
+    margin-right: 10px;
+}
+
+#searchForm input[type="text"] {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 250px;
+    margin-right: 10px;
+}
+
+#searchForm button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #f6ac36;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#searchForm button:hover {
+    background-color: #f08300;
+}
+
+/* Result styling */
+#result {
+    margin-top: 20px;
+    width: 80%;
+    margin: 20px auto;
+    background-color: #F7F0F0;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* จัดข้อมูลในรูปแบบสองคอลัมน์ */
+#result .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+#result .info-row p {
+    font-size: 18px;
+    color: #5c5c5c;
+    margin: 0;
+}
+
+
+#result .info-row .label {
+    width: 30%;
+    font-weight: bold;
+    color: #333;
+}
+
+#result .info-row .value {
+    width: 65%;
+}
+
+/* จัดการรูปภาพ */
+#result img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Upload form styling */
+#uploadForm {
+    margin-top: 20px;
+}
+
+input[type="file"] {
+    padding: 5px;
+    font-size: 14px;
+}
+
+button[type="submit"] {
+    padding: 10px 20px;
+    background-color: #00CC66;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #00994d;
+}
+
+/* ปุ่ม Home */
+.home-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2em;
+    cursor: pointer;
+    color: #5c5c5c;
+}
+
+.home-icon:hover {
+    color: #333;
+}
+
+/* ข้อมูลเพิ่มเติม */
+#result .extra-info {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+#result .extra-info p {
+    margin: 5px 0;
+}
+
+#result .highlight {
+    color: #f08300;
+    font-weight: bold;
+}
+
+.add-file-button {
+    background-color: #FBA834;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    color: #ffffff;
+}
+
+.add-file-button:hover {
+    background-color: gold;
+}
+
+.add-file-button:active {
+    background-color: orange;
+}
+
+.back-button{
+    background-color: #646464;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    color: #ffffff;
+}
+
+.back-button:hover {
+    background-color: #ccc;
+}
+
+.back-button:active {
+    background-color: #646464;
+}
+
+.formUser , .uploadForm {
+    margin-left: 100px;
+}
+
+.back-button{
+    margin-left: 150px;
+}
+
+.formUser p strong{
+    font-size: 18px;
+    color: #333A73;
+    margin: 0;
+}
+
+.add-file-container label{
+    font-size: 18px;
+    font-weight: bold;
+    color: #333A73;
+    margin: 0;
+}

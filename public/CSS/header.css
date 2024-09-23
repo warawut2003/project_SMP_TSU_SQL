@@ -1,0 +1,78 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #FAF2F2;  /* Light gray background to match the provided design */
+    border-bottom: 2px solid #e0e0e0; /* Subtle border for the header */
+}
+.header h2 {
+    margin-bottom: 10px; /* เว้นระยะระหว่างหัวข้อและคำบรรยาย */
+    color: #785123;
+}
+
+.header p {
+    color: #785123;
+    margin-top: 10px; /* เว้นระยะระหว่างคำบรรยายและหัวข้อ */
+}
+
+.header img {
+    height: 80px; /* Larger image size to match the provided design */
+}
+
+.header .admin-info {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+}
+
+.header .admin-info img {
+    height: 50px;  /* Adjust the admin icon size */
+    margin-left: 10px;
+    border-radius: 50%; /* Circular icon */
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown content */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+/* Dropdown links */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Hover effect for dropdown links */
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Show the dropdown when hovering over the icon */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-container img {
+    height: 80px;
+    margin-right: 10px; /* Adjust this value to control space between logos */
+}

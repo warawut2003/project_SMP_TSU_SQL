@@ -4,57 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Project</title>
+    <link rel="stylesheet" href="/CSS/header.css">
+    <link rel="stylesheet" href="/CSS/project_form.css">
+
 </head>
 <body>
-    <h1>Update Project</h1>
 
-    <!-- Form for Updating a Project -->
-    <h2>Update Existing Project</h2>
-    <form id="updateProjectForm" enctype="multipart/form-data">
-
-        <input type="hidden" id="projectId" name="projectId" required>
-        
-
-        <label for="projectName">ชื่อโครงการ:</label>
-        <input type="text" id="projectName" name="projectName" required>
-        <br><br>
-
-        <label for="openDay">วันเปิดรับสมัคร:</label>
-        <input type="datetime-local" id="openDay" name="openDay" required>
-        <br><br>
-
-        <label for="turnOffDay">วันปิดรับสมัคร:</label>
-        <input type="datetime-local" id="turnOffDay" name="turnOffDay" required>
-        <br><br>
-
-        <!-- Display existing project file -->
-        <div id="existingFileContainer">
-            <label>เอกสาร:</label>
-            <a id="existingFileLink" href="#" target="_blank">No file uploaded</a>
+    <div class="header">
+        <div class="logo-container">
+            <img src="/assets/images/TSU.png" alt="TSU Logo">
+            <img src="/assets/images/SMP.png" alt="SMP Logo">
         </div>
-        <br>
+        <div>
+            <h2>โครงการ วมว. - มอ.ทักษิณ</h2>
+            <p>โครงการห้องวิทยาศาสตร์ในโรงเรียนป่าพะยอมพิทยาคม โดยการกำกับดูแลมหาลับทักษิณ</p>
+        </div>
+        <div class="admin-info dropdown">
+            <span id="adminName"></span>
+            <img src="/assets/icons/admin-icon.png" alt="Admin Icon">
+            <div class="dropdown-content">
+                <a href="/admin/profile">Profile</a>
+                <a href="#" onclick="logout()">Log out</a>
+            </div>
+        </div>
+    </div>
 
-        <label for="projectFile">อัพโหลดเอกสาร :</label>
-        <input type="file" id="projectFile" name="projectFile" accept=".pdf,.doc,.docx,.zip">
-        <br><br>
+    <h1>รายระเอียดโครงการ (แก้ไข้)</h1>
 
-        
+    <div class="form-container">
+        <form id="updateProjectForm" enctype="multipart/form-data">
+            <input type="hidden" id="projectId" name="projectId" required>
 
-        <button type="submit">Update Project</button>
-    </form>
+            <div class="form-group">
+                <label for="projectName">ชื่อโครงการ:</label>
+                <input type="text" id="projectName" name="projectName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="openDay">วันเปิดรับสมัคร:</label>
+                <input type="datetime-local" id="openDay" name="openDay" required>
+                <img src="/assets/icons/schedule.png" alt="Calendar Icon" class="icon" data-input-id="openDay">
+            </div>
+            
+            <div class="form-group">
+                <label for="turnOffDay">วันปิดรับสมัคร:</label>
+                <input type="datetime-local" id="turnOffDay" name="turnOffDay" required>
+                <img src="/assets/icons/schedule.png" alt="Calendar Icon" class="icon" data-input-id="turnOffDay">
+            </div>
+
+            <div class="form-group">
+                <label>เอกสาร:</label>
+                <div id="existingFileContainer">
+                    <a id="existingFileLink" href="#" target="_blank">No file uploaded</a>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="projectFile">อัพโหลดเอกสาร:</label>
+                <div class="add-file-container">
+                    <button type="button" class="add-file-button" onclick="document.getElementById('projectFile').click()">Add file</button>
+                    <input type="file" id="projectFile" name="projectFile" accept=".pdf,.doc,.docx,.zip">
+                    <span id="fileName">ยังไม่ได้เลือกไฟล์</span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-button">Update Project</button>
+                <button type="button" class="cancel-button" onclick="window.history.back();">Cancel</button>
+            </div>
+        </form>
+    </div>
 
     <script>
+        // JavaScript for fetching project details and handling form submission
         function formatDateTimeForInput(dateString) {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    
-    // Return in format YYYY-MM-DDTHH:MM
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
 
         async function fetchProjectDetails() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -148,6 +180,19 @@
                 alert('An error occurred: ' + error.message);
             }
         });
+
+        document.getElementById('projectFile').addEventListener('change', function() {
+            const fileName = this.files[0] ? this.files[0].name : 'ยังไม่ได้เลือกไฟล์';
+            document.getElementById('fileName').textContent = fileName;
+        });
+
+        document.getElementById('adminName').textContent = localStorage.getItem('userName');
+
+        function logout() {
+            localStorage.removeItem('accessToken'); // Clear the token
+            localStorage.removeItem('userName'); // Clear the username
+            window.location.href = '/smp/sci/tsu'; // Redirect to login page after logout
+        }
 
         fetchProjectDetails();
     </script>

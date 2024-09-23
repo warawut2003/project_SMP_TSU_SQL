@@ -1,71 +1,12 @@
-
-.header-section {
-    text-align: center;
-    margin-bottom: 20px;
-    border: 2px solid #8b4513; /* Border */
-    width: 80%; /* Adjust width as needed */
-    background-color: #f0dbc0; /* Background color */
-    padding: 10px; /* Add padding for better appearance */
-    position: fixed; /* Fix position at the top */
-    top: 0; /* Align to the top */
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Center horizontally */
-    z-index: 1000; /* Ensure it stays on top of other content */
-}
-.header-section h1 {
-    font-size: 24px;
-    color: #8b4513;
-    margin: 0;
-    
-    padding: 10px; /* Padding */
-    border-radius: 5px; /* Rounded corners */
-   
-}
-
-.header-section p {
-    font-size: 14px;
-    color: #555;
-    margin: 5px 0;
-
-}
-
 /* General Body Styles */
 body {
     font-family: 'Arial', sans-serif;
     background-color: #fbfbfa;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
+    
+    
 }
 
-/* Header Section */
-.header-section {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.header-section img {
-    max-width: 400px;
-    height: auto;
-    margin-bottom: 10px;
-}
-
-.header-section h1 {
-    font-size: 24px;
-    color: #8b4513;
-    margin: 0;
-}
-
-.header-section p {
-    font-size: 14px;
-    color: #555;
-    margin: 5px 0;
-}
-
-/* Container for the Login Form */
 .login-container {
     background-color: #fff;
     padding: 20px;
@@ -74,6 +15,10 @@ body {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     width: 400px;
     text-align: left;
+    position: absolute; /* Allows centering using transform */
+    top: 50%; /* Position top edge at the middle of the viewport */
+    left: 50%; /* Position left edge at the middle of the viewport */
+    transform: translate(-50%, -50%); /* Adjust position to truly center the element */
 }
 
 /* Title for the Form Section */
@@ -123,9 +68,7 @@ button:hover {
     background-color: #45a049;
 }
 
-/* Adjustments for container and form alignment */
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* Add spacing for header if needed */
+.header {
+    margin-bottom: 20px; /* Adjust if you need more or less space between header and form */
 }

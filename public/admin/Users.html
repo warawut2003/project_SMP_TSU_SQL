@@ -5,74 +5,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Users List</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table, th, td {
-            border: 1px solid black;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .button {
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="/CSS/table_users.css">
+    <link rel="stylesheet" href="/CSS/header.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 
 <body>
-    <div class="container">
-        <h1>Users List</h1>
-        <button class="button" onclick="window.location.href = '/admin/projects';">Back to Project Details</button>
-        <table id="usersTable">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>User ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Phone Number</th>
-                    <th>Email</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- ข้อมูลผู้ใช้จะถูกเพิ่มที่นี่ -->
-            </tbody>
-        </table>
+    <div class="header">
+        <div class="logo-container">
+            <img src="/assets/images/TSU.png" alt="TSU Logo">
+            <img src="/assets/images/SMP.png" alt="SMP Logo">
+        </div>
+        <div>
+            <h2>โครงการ วมว. - มอ.ทักษิณ</h2>
+            <p>โครงการห้องวิทยาศาสตร์ในโรงเรียนป่าพะยอมพิทยาคม โดยการกำกับดูแลมหาลับทักษิณ</p>
+        </div>
+        <div class="admin-info dropdown">
+            <span id="adminName"></span>
+            <img src="/assets/icons/admin-icon.png" alt="Admin Icon">
+            <div class="dropdown-content">
+                <a href="/admin/profile">Profile</a>
+                <a href="#" onclick="logout()">Log out</a>
+            </div>
+        </div>
     </div>
 
+    <button class="back-button"  onclick="goBack()">
+        <i class="fas fa-arrow-left"></i> กลับไปยังรายการ
+    </button>
+
+    <h2>รายชื่อผู้สมัคร <img src="/assets/icons/contact-list.png" alt="User List Icon" style="height: 40px; width: 40px;"></h2>
+    
+    
+
+    <table id="usersTable">
+        <thead>
+            <tr>
+                <th>ลำดับ</th>
+                <th>User ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Phone Number</th>
+                <th>Email</th>
+                <th>action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- ข้อมูลผู้ใช้จะถูกเพิ่มที่นี่ -->
+        </tbody>
+    </table>
+
     <script>
+        let projectId;
         async function fetchUsers() {
             const urlParams = new URLSearchParams(window.location.search);
-            const projectId = urlParams.get('id');
-
+                projectId = urlParams.get('id');
             if (!projectId) {
                 alert('Project ID not found in the URL.');
                 window.location.href = '/admin/projects';
@@ -87,55 +74,97 @@
             }
 
             try {
-    const response = await fetch(`/api/admin/get/users/${projectId}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-        }
-    });
+                const response = await fetch(`/api/admin/get/users/${projectId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-    if (response.ok) {
-        const data = await response.json();
-        console.log('API Response:', data);  // ตรวจสอบข้อมูลที่ได้รับ
+                if (response.ok) {
+                    const data = await response.json();
+                    const tableBody = document.querySelector('#usersTable tbody');
+                    tableBody.innerHTML = '';
 
-        if (!Array.isArray(data)) {
-            console.error('Error: Data is not an array', data);
-            alert('Data format error. Please contact support.');
-            return;
-        }
+                    data.forEach((user, index) => {
+                        const row = tableBody.insertRow();
+                        row.insertCell(0).textContent = index + 1;
+                        row.insertCell(1).textContent = user.User_id || '-';
+                        row.insertCell(2).textContent = user.User_Fname || '-';
+                        row.insertCell(3).textContent = user.User_Lname || '-';
+                        row.insertCell(4).textContent = user.User_phone_num || '-';
+                        row.insertCell(5).textContent = user.User_email || '-';
 
-        // ทำงานกับข้อมูลที่เป็น array
-        const tableBody = document.querySelector('#usersTable tbody');
-        tableBody.innerHTML = '';
-
-        data.forEach((user, index) => {
-            const row = tableBody.insertRow();
-            row.insertCell(0).textContent = index + 1;
-            row.insertCell(1).textContent = user.User_id || '-';
-            row.insertCell(2).textContent = user.User_Fname || '-';
-            row.insertCell(3).textContent = user.User_Lname || '-';
-            row.insertCell(4).textContent = user.User_phone_num || '-';
-            row.insertCell(5).textContent = user.User_email || '-';
-
-            const actionsCell = row.insertCell(6);
-            actionsCell.innerHTML = `
-                <button onclick="viewDetails('${user.User_id}')">View Details</button>
-            `;
-        });
-    } else {
-        throw new Error('Unauthorized or error fetching users');
-    }
-} catch (error) {
-    console.error('Error fetching users:', error);
-    alert('Error fetching users: ' + error.message);
-}
+                        const actionsCell = row.insertCell(6);
+                        actionsCell.innerHTML = `
+        <span class="action-icons">
+            <img src="/assets/icons/research.png" onclick="viewDetails('${user.User_id}')" title="View">
+            <img src="/assets/icons/bin.png" onclick="deleteUser('${user.User_id}')" title="Delete" style="cursor: pointer;">
+        </span>
+    `;
+                    });
+                } else {
+                    throw new Error('Unauthorized or error fetching users');
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                alert('Error fetching users: ' + error.message);
+            }
         }
 
         function viewDetails(userId) {
-            // นำทางไปยังหน้ารายละเอียดของผู้ใช้ด้วย userId
             window.location.href = `/admin/user/examine?id=${userId}`;
         }
+
+        async function deleteUser(userId) {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+        alert('Access token not found. Please login again.');
+        window.location.href = '/smp/sci/tsu';
+        return;
+    }
+
+    if (confirm('Are you sure you want to delete this user?')) {
+        try {
+            const response = await fetch(`/api/admin/delete/user/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                alert('User deleted successfully.');
+                fetchUsers(); // Refresh the user list
+            } else {
+                throw new Error('Error deleting user');
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            alert('Error deleting user: ' + error.message);
+        }
+    }
+}
+
+        
+
+        function goBack() {
+            window.location.href = `/admin/project/view/?id=${projectId}`;
+        }
+
+        
+
+
+        document.getElementById('adminName').textContent = localStorage.getItem('userName');
+
+        function logout() {
+            localStorage.removeItem('accessToken'); // Clear the token
+            localStorage.removeItem('userName'); // Clear the username
+            window.location.href = '/smp/sci/tsu'; // Redirect to login page after logout
+        }
+
 
         fetchUsers();
     </script>

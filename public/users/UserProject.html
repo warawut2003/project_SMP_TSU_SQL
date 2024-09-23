@@ -4,8 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Details</title>
+    <link rel="stylesheet" href="/CSS/header.css">
+    <link rel="stylesheet" href="/CSS/userproject.css"> <!-- ปรับใช้ CSS สำหรับ userProject -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> <!-- FontAwesome สำหรับไอคอน -->
 </head>
 <body>
+     <!-- Header section -->
+     <div class="header">
+        <div class="logo-container">
+            <img src="/assets/images/TSU.png" alt="TSU Logo">
+            <img src="/assets/images/SMP.png" alt="SMP Logo">
+        </div>
+        <div>
+            <h2>โครงการ วมว. - มอ.ทักษิณ</h2>
+            <p>โครงการห้องวิทยาศาสตร์ในโรงเรียนป่าพะยอมพิทยาคม โดยการกำกับดูแลมหาลับทักษิณ</p>
+        </div>
+        <div class="admin-info dropdown">
+            
+        </div>
+    </div>
+
+    
+  
     <h1>Project Details</h1>
     <div id="project-details-container">
         <!-- Dynamic content will be inserted here -->
@@ -27,23 +47,13 @@
                 
 
                 if (response.ok) {
-                        const data = await response.json();
-                        const projectDetailsContainer = document.getElementById('project-details-container');
+                    const data = await response.json();
+                    const projectDetailsContainer = document.getElementById('project-details-container');
 
-                        data.forEach(project => {
-
-                        const options = { year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit',
-                            hour12: false,
-                            timeZoneName: 'short' 
-                        };
+                    data.forEach(project => {
+                        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
                         const startDate = new Date(project.project_start_date).toLocaleString('en-US', options);
                         const endDate = new Date(project.project_expiration_date).toLocaleString('en-US', options);
-
 
                         const projectDetails = document.createElement('div');
                         projectDetails.className = 'project-details';
@@ -51,26 +61,27 @@
                             <h2>${project.project_name}</h2>
                             <p><strong>Start Date:</strong> ${startDate}</p>
                             <p><strong>End Date:</strong> ${endDate}</p>
-                            <br>
-                            <a href="/uploads/ProjectFile/${project.project_file}"  download>${project.project_file}</a>
-                            <br><br>
-                             <a href="/users/register" data-project-id="${project.project_id}">สมัคร</a>
-                             <br><br>
-                            <a href="/user/search">Go to Search Page</a>
+                            <p><a href="/uploads/ProjectFile/${project.project_file}" download><i class="fas fa-file-pdf"></i> ${project.project_file}</a></p>
+                            
+                            <div class="button-container">
+                            <a href="/users/register" class="button register-btn" data-project-id="${project.project_id}"><i class="fas fa-user-plus"></i> สมัครโครงการ</a>
+                            <a href="/user/search" class="button search-btn"><i class="fas fa-search"></i> ค้นหาโครงการ</a>
+                        </div>
                         `;
                         projectDetailsContainer.appendChild(projectDetails);
                     });
+
                     document.querySelectorAll('a[data-project-id]').forEach(link => {
                         link.addEventListener('click', function() {
                             localStorage.setItem('project_id', this.getAttribute('data-project-id'));
                         });
                     });
                 } else {
-                    alert('No projects available or error fetching data.');
+                    alert('ไม่พบโครงการหรือเกิดข้อผิดพลาดในการดึงข้อมูล');
                 }
             } catch (error) {
                 console.error('Error fetching projects:', error);
-                alert('Error fetching projects.');
+                alert('เกิดข้อผิดพลาดในการดึงข้อมูล');
             }
         }
 

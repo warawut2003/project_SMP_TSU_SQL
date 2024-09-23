@@ -4,48 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apply for Project</title>
+    <link rel="stylesheet" href="/CSS/user_register.css">
+    <link rel="stylesheet" href="/CSS/header.css">
 </head>
 <body>
-    <h1>Apply for Project</h1>
+
+    <!-- Header section -->
+    <div class="header">
+        <div class="logo-container">
+            <img src="/assets/images/TSU.png" alt="TSU Logo">
+            <img src="/assets/images/SMP.png" alt="SMP Logo">
+        </div>
+        <div>
+            <h2>โครงการ วมว. - มอ.ทักษิณ</h2>
+            <p>โครงการห้องวิทยาศาสตร์ในโรงเรียนป่าพะยอมพิทยาคม โดยการกำกับดูแลมหาลับทักษิณ</p>
+        </div>
+        <div class="admin-info dropdown">
+            
+        </div>
+    </div>
+
+    <h1>สมัครเข้าโครงการ <img src="/assets/icons/register.png" alt="Add Icon" style="height: 40px; width: 40px;"></h1>
     <form id="UserForm" enctype="multipart/form-data">
+
+        <!-- เพิ่ม input hidden ถ้าต้องการใช้ project_id_fk -->
         <input type="hidden" id="project_id_fk" name="project_id_fk">
 
-        <!-- ฟิลด์อื่นๆ ในฟอร์ม -->
-        <label for="National_ID">National ID:</label>
-        <input type="text" id="National_ID" name="National_ID" required>
-        <br>
-        <label for="User_prefix">Prefix:</label>
-        <input type="text" id="User_prefix" name="User_prefix" required>
-        <br>
-        <label for="User_Fname">First Name:</label>
-        <input type="text" id="User_Fname" name="User_Fname" required>
-        <br>
-        <label for="User_Lname">Last Name:</label>
-        <input type="text" id="User_Lname" name="User_Lname" required>
-        <br>
-        <label for="User_gender">Gender:</label>
-        <input type="text" id="User_gender" name="User_gender" required>
-        <br>
-        <label for="User_Date_Birth">Date of Birth:</label>
-        <input type="date" id="User_Date_Birth" name="User_Date_Birth" required>
-        <br>
-        <label for="User_age">Age:</label>
-        <input type="number" id="User_age" name="User_age" required>
-        <br>
-        <label for="phone_num">Phone Number:</label>
-        <input type="text" id="phone_num" name="phone_num" required>
-        <br>
-        <label for="User_email">Email:</label>
-        <input type="email" id="User_email" name="User_email" required>
-        <br>
-        <input type="hidden" id="User_status" name="User_status" value="รอการตรวจสอบ">
-        <label for="User_Image">Image:</label>
-        <input type="file" id="User_Image" name="User_Image" required>
-        <br>
-        <label for="User_file">File:</label>
-        <input type="file" id="User_file" name="User_file" required>
-        <br>
+        <div class="form-group">
+            <label for="National_ID">National ID:</label>
+            <input type="text" id="National_ID" name="National_ID" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="User_prefix">Prefix:</label>
+            <input type="text" id="User_prefix" name="User_prefix" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="User_Fname">First Name:</label>
+            <input type="text" id="User_Fname" name="User_Fname" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="User_Lname">Last Name:</label>
+            <input type="text" id="User_Lname" name="User_Lname" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="User_gender">Gender:</label>
+            <input type="text" id="User_gender" name="User_gender" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="User_Date_Birth">Date of Birth:</label>
+            <input type="date" id="User_Date_Birth" name="User_Date_Birth" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="User_age">Age:</label>
+            <input type="number" id="User_age" name="User_age" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="phone_num">Phone Number:</label>
+            <input type="text" id="phone_num" name="phone_num" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="User_email">Email:</label>
+            <input type="email" id="User_email" name="User_email" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="User_Image">Image:</label>
+            <input type="file" id="User_Image" name="User_Image" required>
+        </div>
+
+        <input type="hidden" id="User_status" value="รอการตรวจสอบ">
+    
+        <div class="form-group">
+            <label for="User_file">File:</label>
+            <input type="file" id="User_file" name="User_file" required>
+        </div>
+    
+        <!-- ปุ่มสมัครและยกเลิก -->
         <button type="submit">สมัคร</button>
+        <button type="button" id="cancelButton">ยกเลิก</button>
     </form>
 
     <script>
@@ -79,6 +123,7 @@
             formData.append('User_file', document.getElementById('User_file').files[0]);
             formData.append('project_id_fk', document.getElementById('project_id_fk').value);
 
+
             // ตรวจสอบข้อมูลใน FormData
     for (let pair of formData.entries()) {
         console.log(pair[0]+ ', ' + pair[1]); 
@@ -102,6 +147,22 @@
                 alert('An error occurred: ' + error.message);
             }
         });
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const cancelButton = document.getElementById('cancelButton');
+            
+            if (cancelButton) {
+                cancelButton.addEventListener('click', function() {
+                    if (confirm("คุณแน่ใจหรือไม่ว่าต้องการยกเลิก?")) {
+                        window.location.href = '/users/project'; // หรือเส้นทางที่ต้องการ
+                    }
+                });
+            } else {
+                console.error('Cancel button not found.');
+            }
+        });
+        
+
     </script>
 </body>
 </html>

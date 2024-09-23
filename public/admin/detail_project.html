@@ -4,66 +4,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Details</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-
-        .project-details {
-            border: 1px solid black;
-            padding: 20px;
-            width: 50%;
-            margin: 0 auto;
-            background-color: #f9f9f9;
-        }
-
-        .project-details h2 {
-            margin-top: 0;
-        }
-
-        .project-details p {
-            margin: 10px 0;
-        }
-
-        .project-details label {
-            font-weight: bold;
-        }
-
-        .buttons {
-            margin-top: 20px;
-        }
-
-        .buttons button {
-            margin-right: 10px;
-        }
-    </style>
+    <title>รายละเอียดโครงการ</title>
+    <link rel="stylesheet" href="/CSS/header.css">
+    <link rel="stylesheet" href="/CSS/detail_project.css">  <!-- เชื่อมไฟล์ CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> <!-- เพิ่ม FontAwesome สำหรับไอคอน -->
 </head>
 
 <body>
-    <h1>Project Details</h1>
-    <div class="project-details">
-        <h2 id="projectName">Project Name</h2>
-        <p><label>Project ID:</label> <span id="projectId"></span></p>
-        <p><label>Start Date:</label> <span id="startDate"></span></p>
-        <p><label>End Date:</label> <span id="endDate"></span></p>
-        <p><label>File:</label> <a id="projectFileLink" href="#" target="_blank">Download File</a></p>
-        <div class="buttons">
-            <button onclick="editProject()">Edit</button>
-            <button onclick="deleteProject()">Delete</button>
-            <button onclick="window.location.href = '/admin/projects';">Back to List</button>
-            <button onclick="viewUsers()">ตรวจสอบรายชื่อ</button>
+
+    <!-- Header section -->
+    <div class="header">
+        <div class="logo-container">
+            <img src="/assets/images/TSU.png" alt="TSU Logo">
+            <img src="/assets/images/SMP.png" alt="SMP Logo">
+        </div>
+        <div>
+            <h2>โครงการ วมว. - มอ.ทักษิณ</h2>
+            <p>โครงการห้องวิทยาศาสตร์ในโรงเรียนป่าพะยอมพิทยาคม โดยการกำกับดูแลมหาลับทักษิณ</p>
+        </div>
+        <div class="admin-info dropdown">
+            <span id="adminName"></span>
+            <img src="/assets/icons/admin-icon.png" alt="Admin Icon">
+            <div class="dropdown-content">
+                <a href="/admin/profile">โปรไฟล์</a>
+                <a href="#" onclick="logout()">ออกจากระบบ</a>
+            </div>
         </div>
     </div>
 
+    <!-- Project details section -->
+    <!-- Header for project details and buttons -->
+<div class="header-container">
+    <h1>รายละเอียดโครงการ <img src="/assets/icons/file.png" alt="Add Icon" style="height: 40px; width: 40px;"> </h1>
+    
+    <!-- ปุ่มแก้ไขและลบ -->
+    <div class="top-buttons">
+        <button class="edit" onclick="editProject()">
+            <i class="fas fa-edit"></i> แก้ไข
+        </button>
+        <button class="delete" onclick="deleteProject()">
+            <i class="fas fa-trash"></i> ลบ
+        </button>
+    </div>
+</div>
+    <div class="project-details">
+        <!-- รายละเอียดโครงการ -->
+        <h2 id="projectName"></h2>
+        <p><label>รหัสโครงการ:</label> <span id="projectId"></span></p>
+        <p class="dates"><label>วันที่เริ่มต้น:</label> <span id="startDate"></span></p>
+        <p class="dates"><label>วันที่สิ้นสุด:</label> <span id="endDate"></span></p>
+        <p><label>ไฟล์:</label> 
+            <a id="projectFileLink" href="#" target="_blank">
+                <i class="fas fa-file-pdf"></i> ดาวน์โหลดไฟล์
+            </a>
+        </p>
+
+        <!-- ปุ่มกลับไปยังรายการและตรวจสอบรายชื่อ -->
+        <div class="bottom-buttons">
+            <button class="back" onclick="window.location.href = '/admin/projects';">
+                <i class="fas fa-arrow-left"></i> กลับไปยังรายการ
+            </button>
+            <button class="check" onclick="viewUsers()">
+                <i class="fas fa-users"></i> ตรวจสอบรายชื่อ
+            </button>
+        </div>
+    </div>
+
+
     <script>
+
+        function formatDate(dateString) {
+                    const options = {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false // Use 24-hour format
+                    };
+                    const date = new Date(dateString);
+                    return date.toLocaleString('en-GB', options); // 'en-GB' for DD-MM-YYYY HH:mm:ss
+                }
+
+        // Fetch project details function
         async function fetchProjectDetails() {
             const urlParams = new URLSearchParams(window.location.search);
             const projectId = urlParams.get('id');
 
             if (!projectId) {
-                alert('Project ID not found in the URL.');
+                alert('ไม่พบรหัสโครงการใน URL');
                 window.location.href = '/admin/projects';
                 return;
             }
@@ -71,7 +101,7 @@
             const accessToken = localStorage.getItem('accessToken');
 
             if (!accessToken) {
-                alert('Access token not found. Please login again.');
+                alert('ไม่พบโทเค็นการเข้าถึง กรุณาเข้าสู่ระบบใหม่');
                 window.location.href = '/smp/sci/tsu';
                 return;
             }
@@ -89,15 +119,15 @@
                     const project = await response.json();
                     document.getElementById('projectName').textContent = project.project_name;
                     document.getElementById('projectId').textContent = project.project_id;
-                    document.getElementById('startDate').textContent = project.project_start_date;
-                    document.getElementById('endDate').textContent = project.project_expiration_date;
+                    document.getElementById('startDate').textContent = formatDate(project.project_start_date);
+                    document.getElementById('endDate').textContent = formatDate(project.project_expiration_date);
                     document.getElementById('projectFileLink').textContent = project.project_file;
                     document.getElementById('projectFileLink').href = `/uploads/ProjectFile/${project.project_file}`;  // ตั้งค่าลิงก์ไฟล์
                 } else if (response.status === 404) {
-                    alert('Project not found.');
+                    alert('ไม่พบโครงการ');
                     window.location.href = '/admin/projects';
                 } else {
-                    throw new Error('Error fetching project details');
+                    throw new Error('เกิดข้อผิดพลาดในการดึงข้อมูลโครงการ');
                 }
             } catch (error) {
                 console.error('Error fetching project details:', error);
@@ -106,6 +136,7 @@
             }
         }
 
+        // Edit project function
         function editProject() {
             const urlParams = new URLSearchParams(window.location.search);
             const projectId = urlParams.get('id');
@@ -113,25 +144,27 @@
             if (projectId) {
                 window.location.href = `/admin/project/edit?id=${projectId}`;
             } else {
-                alert('Project ID not found.');
+                alert('ไม่พบรหัสโครงการ');
             }
         }
+
+        // Delete project function
         async function deleteProject() {
             const urlParams = new URLSearchParams(window.location.search);
             const projectId = urlParams.get('id');
 
             if (!projectId) {
-                alert('Project ID not found.');
+                alert('ไม่พบรหัสโครงการ');
                 return;
             }
 
-            const confirmation = confirm("Are you sure you want to delete this project?");
+            const confirmation = confirm("คุณแน่ใจหรือไม่ว่าต้องการลบโครงการนี้?");
             if (!confirmation) return;
 
             const accessToken = localStorage.getItem('accessToken');
 
             if (!accessToken) {
-                alert('Access token not found. Please login again.');
+                alert('ไม่พบโทเค็นการเข้าถึง กรุณาเข้าสู่ระบบใหม่');
                 window.location.href = '/smp/sci/tsu';
                 return;
             }
@@ -146,10 +179,10 @@
                 });
 
                 if (response.ok) {
-                    alert('Project deleted successfully');
+                    alert('ลบโครงการสำเร็จ');
                     window.location.href = '/admin/projects';
                 } else {
-                    throw new Error('Error deleting project');
+                    throw new Error('เกิดข้อผิดพลาดในการลบโครงการ');
                 }
             } catch (error) {
                 console.error('Error deleting project:', error);
@@ -157,6 +190,7 @@
             }
         }
 
+        // View users function
         function viewUsers() {
             const urlParams = new URLSearchParams(window.location.search);
             const projectId = urlParams.get('id');
@@ -164,8 +198,18 @@
             if (projectId) {
                 window.location.href = `/admin/list/users?id=${projectId}`;
             } else {
-                alert('Project ID not found.');
+                alert('ไม่พบรหัสโครงการ');
             }
+        }
+
+        // Display admin name
+        document.getElementById('adminName').textContent = localStorage.getItem('userName');
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('accessToken'); // ลบโทเค็นการเข้าถึง
+            localStorage.removeItem('userName'); // ลบชื่อผู้ใช้
+            window.location.href = '/smp/sci/tsu'; // เปลี่ยนเส้นทางไปยังหน้าล็อกอิน
         }
 
         fetchProjectDetails();

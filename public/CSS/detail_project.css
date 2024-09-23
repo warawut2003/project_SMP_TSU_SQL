@@ -1,0 +1,146 @@
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #ffff;
+    
+}
+
+/* Container for project details */
+.project-details {
+    width: 80%;
+    
+    margin: 0 auto;
+    background-color: #F7F0F0;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Title */
+h1 {
+    
+    font-size: 1.8em;
+    color: #333;
+}
+
+/* Subtitle and header */
+.project-details h2 {
+    font-size: 1.5em;
+    color: #333A73;
+    margin-bottom: 10px;
+}
+
+/* Paragraph and labels */
+.project-details p {
+    font-size: 1.1em;
+    color: #333A73;
+    margin: 5px 0;
+}
+
+.project-details label {
+    font-weight: bold;
+    color: #333A73;
+}
+
+/* Button styles */
+.buttons {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 20px;
+}
+
+.buttons button {
+    padding: 10px 15px;
+    font-size: 1em;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.buttons button:hover {
+    background-color: #ddd;
+}
+
+/* Specific button colors */
+button.edit {
+    background-color: #ffc107;
+    color: #fff;
+}
+
+button.delete {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+button.back {
+    background-color: #007bff;
+    color: #fff;
+}
+
+button.check {
+    background-color: #28a745;
+    color: #fff;
+}
+
+/* Styling the file download link */
+.project-details a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.project-details a:hover {
+    text-decoration: underline;
+}
+
+/* Date and time styles */
+.project-details .dates {
+    font-size: 1.1em;
+    color: #333;
+}
+
+/* ปรับโครงสร้างให้ h1 และปุ่มแก้ไข/ลบอยู่ในแถวเดียวกัน */
+.header-container {
+    display: flex;
+    justify-content: space-between; /* จัดตำแหน่งให้ h1 อยู่ซ้าย และปุ่มอยู่ขวา */
+    align-items: center; /* ทำให้ h1 และปุ่มอยู่ในแนวกลาง */
+    margin-bottom: 20px; /* เพิ่มระยะห่างด้านล่าง */
+}
+
+/* ปรับปุ่มแก้ไขและลบให้ชิดกัน */
+.header-container .top-buttons button.edit,
+.header-container .top-buttons button.delete {
+    margin-left: 10px;
+}
+
+/* ปรับความสูงของปุ่มทั้งหมด */
+.buttons button, 
+.header-container .top-buttons button, 
+.bottom-buttons button {
+    padding: 15px 20px; /* เพิ่มความสูงของปุ่ม */
+    font-size: 1em;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* ปรับปุ่มกลับไปยังรายการ และตรวจสอบรายชื่อให้ชิดขวา */
+.bottom-buttons {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 20px;
+}
+
+.bottom-buttons button.back {
+    width: 30%;
+}
+
+.bottom-buttons button.check {
+    width: 30%;
+    margin-left: auto; /* ทำให้ปุ่มชิดขวา */
+}

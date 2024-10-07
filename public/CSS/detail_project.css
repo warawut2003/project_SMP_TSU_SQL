@@ -31,83 +31,14 @@ h1 {
     color: #333A73;
     margin-bottom: 10px;
 }
-
-/* Paragraph and labels */
-.project-details p {
-    font-size: 1.1em;
-    color: #333A73;
-    margin: 5px 0;
-}
-
-.project-details label {
-    font-weight: bold;
-    color: #333A73;
-}
-
-/* Button styles */
-.buttons {
-    display: flex;
-    justify-content: flex-start;
-    margin-top: 20px;
-}
-
-.buttons button {
-    padding: 10px 15px;
-    font-size: 1em;
-    margin-right: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.buttons button:hover {
-    background-color: #ddd;
-}
-
-/* Specific button colors */
-button.edit {
-    background-color: #ffc107;
-    color: #fff;
-}
-
-button.delete {
-    background-color: #dc3545;
-    color: #fff;
-}
-
-button.back {
-    background-color: #007bff;
-    color: #fff;
-}
-
-button.check {
-    background-color: #28a745;
-    color: #fff;
-}
-
-/* Styling the file download link */
-.project-details a {
-    text-decoration: none;
-    color: #007bff;
-}
-
-.project-details a:hover {
-    text-decoration: underline;
-}
-
-/* Date and time styles */
-.project-details .dates {
-    font-size: 1.1em;
-    color: #333;
-}
-
 /* ปรับโครงสร้างให้ h1 และปุ่มแก้ไข/ลบอยู่ในแถวเดียวกัน */
 .header-container {
     display: flex;
     justify-content: space-between; /* จัดตำแหน่งให้ h1 อยู่ซ้าย และปุ่มอยู่ขวา */
     align-items: center; /* ทำให้ h1 และปุ่มอยู่ในแนวกลาง */
     margin-bottom: 20px; /* เพิ่มระยะห่างด้านล่าง */
+    margin-left: 120px;
+    margin-right: 120px;
 }
 
 /* ปรับปุ่มแก้ไขและลบให้ชิดกัน */
@@ -123,10 +54,11 @@ button.check {
     padding: 15px 20px; /* เพิ่มความสูงของปุ่ม */
     font-size: 1em;
     margin-right: 10px;
-    border: none;
     border-radius: 5px;
+    border: solid;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, border-color 0.3s; /* เพิ่มการเปลี่ยนสีกรอบ */
+    
 }
 
 /* ปรับปุ่มกลับไปยังรายการ และตรวจสอบรายชื่อให้ชิดขวา */
@@ -136,11 +68,121 @@ button.check {
     margin-top: 20px;
 }
 
-.bottom-buttons button.back {
-    width: 30%;
+
+
+/* Button styles */
+.buttons {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 20px;
 }
 
-.bottom-buttons button.check {
-    width: 30%;
+
+
+button:hover {
+    background-color: #ddd; /* เปลี่ยนสีพื้นหลัง */
+    border-color: #666; /* เปลี่ยนสีเส้นกรอบเมื่อ hover */
+    animation: vibrate 0.2s infinite; /* เริ่มการสั่น */
+}
+
+/* Specific button colors */
+button.edit {
+    background-color: #ffc107;
+    color: #fff;
+}
+
+button.delete {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+
+button.edit:hover {
+    background-color: #e0a800; /* สีพื้นหลังเมื่อ hover */
+    border-color: #e0a800; /* สีกรอบเมื่อ hover */
+}
+
+button.delete:hover {
+    background-color: #c90014; /* สีพื้นหลังเมื่อ hover */
+    border-color: #c90014; /* สีกรอบเมื่อ hover */
+}
+
+button.back {
+    width: 20%;
+    background-color: #fff;
+    color: #0056b3;
+    border-color: #0056b3; /* สีกรอบของปุ่ม back */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Added shadow effect */
+}
+
+button.back:hover {
+    background-color: #007bff; /* สีพื้นหลังเมื่อ hover */
+    color: #fff; /* เปลี่ยนสีข้อความเมื่อ hover */
+    border-color: #007bff; /* สีกรอบเมื่อ hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Added shadow effect */
+}
+
+
+button.check {
+    width: 20%;
     margin-left: auto; /* ทำให้ปุ่มชิดขวา */
+    background-color:  #fff;
+    color: #ff9e07;
+    border-color:  #ff9e07; /* สีกรอบของปุ่ม check */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Added shadow effect */
+}
+
+button.check:hover {
+    background-color: #ffc107; /* สีพื้นหลังเมื่อ hover */
+    color: #fff; /* เปลี่ยนสีข้อความเมื่อ hover */
+    border-color: #ffc107; /* สีกรอบเมื่อ hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Added shadow effect */
+}
+
+
+
+/* จัดให้อยู่ตรงกลาง */
+.file-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    height: 100vh; /* ใช้ความสูงเต็มหน้าจอ */
+}
+
+
+
+/* ปรับสไตล์ของลิงก์ดาวน์โหลด */
+#projectFileLink {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #007bff;
+    text-decoration: none;
+}
+
+#projectFileLink:hover {
+    text-decoration: underline;
+}
+
+
+
+.date-container {
+    text-align: center; /* จัดตำแหน่งทั้งหมดให้อยู่ตรงกลาง */
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+.dates {
+    
+    display: inline-block; /* ทำให้วันที่แสดงเป็นบล็อกและจัดตำแหน่งตรงกลาง */
+    margin: 0 auto;
+    padding: 10px;
+
+    border-radius: 10px; /* มุมโค้ง */
+}
+
+.dates label{
+    font-weight: bold;
+    color: #333A73;
 }

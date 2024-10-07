@@ -6,39 +6,67 @@ body {
 
 .form-container {
     background-color: #F7F0F0;
-    width: 70%;
+    width: 88%;
     margin: 0 auto;
     padding: 20px;
+    padding-top: 60px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    
 }
 
+.header-title{
+    
+    margin-left: 100px;
+    align-items: center;
+    display: flex;
+   
+}
 h1 {
-    text-align: center;
-    color: #b25e52;
+    
+    margin-right: 10px;
+    color: #000000;
     font-size: 1.6rem;
 }
 
 .form-group {
+    
     display: flex;
     align-items: center;
     margin-bottom: 15px;
+    margin-right: 180px; /* เพิ่มระยะห่างทางด้านขวา */
 }
 
 label {
-    flex: 1;
+    flex: 1; /* ขนาดของ label */
     font-weight: bold;
-    color: #333;
+    font-size: 20px;
+    color: #333A73;
+    margin-left: 50px; /* ระยะห่างจาก input */
 }
 
 input[type="text"],
 input[type="datetime-local"] {
-    flex: 3;
+    flex: 3; /* ขนาดของ input */
     padding: 8px;
     font-size: 1rem;
     border-radius: 4px;
     border: 1px solid #ccc;
-    margin-left: 10px;
+    margin-left: 10px; /* ระยะห่างจาก label */
+    margin-right: 10px; /* เพิ่มระยะห่างทางด้านขวา */
+}
+
+input[type="datetime-local"] {
+    flex: 1; /* ลดความกว้าง */
+    margin-right: 550px; /* เพิ่มระยะห่างทางด้านขวา */
+}
+
+
+#projectFilePreview {
+    display: none; /* Hide iframe by default */
+    width: 40%; 
+    height: 300px; 
+    border: none;
 }
 
 .add-file-container {
@@ -55,15 +83,21 @@ input[type="datetime-local"] {
     padding: 8px 12px;
     border-radius: 4px;
     cursor: pointer;
-    margin-right: 10px; /* Space between button and file name */
+    margin-right: 20px; /* Space between button and file name */
+    
 }
 
 input[type="file"] {
     display: none; /* Hide file input */
 }
 
+
 .add-file-button:hover {
     background-color: #e6b800;
+}
+
+.error {
+    border: 2px solid red;
 }
 
 #fileName {
@@ -80,7 +114,7 @@ input[type="file"] {
 .form-actions {
     display: flex;
     justify-content: space-around;
-    margin-top: 20px;
+    margin-top: 70px;
 }
 
 .submit-button {
@@ -141,3 +175,5 @@ input[type="file"] {
         border: 1px solid #ddd;
         display: inline-block;
     }
+
+    

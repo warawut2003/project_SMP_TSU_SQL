@@ -1,0 +1,49 @@
+.btn-next-back{
+    margin-top: 10px;
+}
+
+.btn-next-back button {
+    border:none;
+    border-radius: 5px; /* ขอบมน */
+    padding: 10px 20px; /* ขนาดของปุ่ม */
+    cursor: pointer; /* แสดงรูปแบบ cursor เป็นมือ */
+    font-size: 16px; /* ขนาดตัวอักษร */
+    
+    margin: 0 5px; /* ระยะห่างระหว่างปุ่ม */
+    transition: background-color 0.3s ease; /* เพิ่มเอฟเฟกต์การเปลี่ยนสีพื้นหลัง */
+}
+
+.pagination-btn-next{
+    background-color: #4CAF50; /* สีพื้นหลังเขียว */
+    color: white; /* สีตัวอักษรขาว */
+}
+
+.pagination-btn-back{
+    background-color: #FBA834; /* สีพื้นหลังเขียว */
+    color: white; /* สีตัวอักษรขาว */
+}
+
+.pagination-btn-next:hover{
+    background-color: #4e8b50; /* สีพื้นหลังเมื่อ hover */
+    color: white; 
+
+}
+.pagination-btn-back:hover{
+    background-color: #cb9548; /* สีพื้นหลังเมื่อ hover */
+    color: white; 
+
+}
+
+.btn-next-back button:disabled {
+    background-color: #ccc; /* สีปุ่มเมื่อถูก disabled */
+    cursor: not-allowed; /* เปลี่ยน cursor เมื่อปุ่มถูก disabled */
+}
+.btn-next-back button i {
+    margin-right: 8px; /* ระยะห่างระหว่างไอคอนกับข้อความ */
+}
+
+.btn-next-back button i:last-child {
+    margin-right: 0;
+    margin-left: 8px; /* ระยะห่างสำหรับไอคอนในปุ่ม Next */
+}
+

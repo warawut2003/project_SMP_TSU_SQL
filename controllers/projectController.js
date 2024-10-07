@@ -7,9 +7,6 @@ const fs = require('fs');
 
 // const moment = require('moment'); // ใช้ moment.js สำหรับจัดการวันที่
 
-
-
-
 // ฟังก์ชันสำหรับลบไฟล์
 const deleteFile = (filePath) => {
     return new Promise((resolve, reject) => {
@@ -20,14 +17,20 @@ const deleteFile = (filePath) => {
     });
 };
 
+
+
+
+
 exports.createProject = async (req, res) => {
-        const { ProjectName, Openday, Turnoffday } = req.body;
+        const { ProjectName, Openday, Turnoffday,admin_id } = req.body;
         const ProjectFile = req.file ? req.file.filename : null;// รับชื่อไฟล์
+
+        console.log(admin_id);
 
         
 
         // ตรวจสอบความครบถ้วนของข้อมูล
-        if (!ProjectName || !Openday || !Turnoffday ) {
+        if (!ProjectName || !Openday || !Turnoffday ||!admin_id ) {
             return res.status(400).send('Missing required fields');
         }
 
@@ -56,9 +59,9 @@ exports.createProject = async (req, res) => {
             }
 
             // แทรกข้อมูลลงในฐานข้อมูล
-            await connection.execute(`INSERT INTO projects (project_id, project_name, project_file, project_start_date, project_expiration_date) VALUES (?, ?, ?, ?, ?);`,
+            await connection.execute(`INSERT INTO projects (project_id, project_name, project_file, project_start_date, project_expiration_date, admin_id_FK) VALUES (?, ?, ?, ?, ?, ?);`,
                 [
-                    newProjectId, ProjectName, ProjectFile, Openday, Turnoffday
+                    newProjectId, ProjectName, ProjectFile, Openday, Turnoffday ,admin_id
                 ]
             );
 
@@ -78,36 +81,62 @@ exports.deleteProject = async (req, res) => {
         return res.status(400).send('Project ID is required');
     }
 
-    
-
     try {
+        // Step 1: Get project file from the project table
         const [rows] = await connection.execute('SELECT project_file FROM projects WHERE project_id = ?', [project_id]);
 
-
-        if (rows.affectedRows === 0) {
+        if (rows.length === 0) {
             return res.status(404).send('Project not found');
         }
 
         const projectFile = rows[0].project_file;
         const filePath = path.join('uploads', 'ProjectFile', projectFile);
 
-            // ลบไฟล์
-            deleteFile(filePath);
+        // Step 2: Delete the project file
+        await deleteFile(filePath);
 
+        // Step 3: Get associated users based on project_id_fk
+        const [userRows] = await connection.execute('SELECT User_id FROM users WHERE project_id_fk = ?', [project_id]);
+
+        if (userRows.length > 0) {
+            for (const user of userRows) {
+                const userId = user.User_id;
+
+                
+
+                // Define paths for documents and images
+
+                // Define paths for documents and images for each user
+                const documentFolderPath = path.join('uploads', 'User', 'documents', userId);
+                const imagesFolderPath = path.join('uploads', 'User', 'images', userId);
+                
+
+ 
+                await deleteDirectory(documentFolderPath);
+                await deleteDirectory(imagesFolderPath);
+
+                // Delete the user folder itself
+
+
+                // Delete the user from the database
+                await connection.execute('DELETE FROM users WHERE User_id = ?', [userId]);
+            }
+        }
+
+        // Step 4: Delete the project itself
         const [result] = await connection.execute('DELETE FROM projects WHERE project_id = ?', [project_id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).send('Project not found');
         }
 
-
-        console.log("Successfully deleted");
-        res.status(200).send('Successfully deleted');
+        console.log("Project and associated users deleted successfully");
+        res.status(200).send('Project and associated users deleted successfully');
     } catch (err) {
         console.error(err);
-        res.status(500).send('An error occurred while deleting');
+        res.status(500).send('An error occurred while deleting the project and users');
     }
-}
+};
 
 exports.updateProject = async (req, res) => {
     const { project_id } = req.params;
@@ -168,7 +197,7 @@ exports.getProject = async (req, res) => {
 
     try {
         const [rows] = await connection.execute(
-            'SELECT * FROM projects WHERE project_id = ?',
+            'SELECT * FROM projects WHERE project_id = ?' ,
             [project_id]
         );
 
@@ -184,7 +213,7 @@ exports.getProject = async (req, res) => {
 }
 exports.getProjects = async (req, res) => {
     try {
-        const [rows] = await connection.execute('SELECT * FROM projects');
+        const [rows] = await connection.execute('SELECT * FROM projects ORDER BY project_id DESC');
 
         if (rows.length === 0) {
             return res.status(404).send('No projects found');
@@ -211,6 +240,16 @@ exports.nonEndProject = async(req, res) => {
         res.status(500).send('Error fetching projects.');
     }
 };
+
+const deleteDirectory = (dirPath) => {
+    return new Promise((resolve, reject) => {
+        fs.rm(dirPath, { recursive: true, force: true }, (err) => {
+            if (err) reject(err);
+            resolve();
+        });
+    });
+};
+
 
 // exports.applyForProject = async (req, res) => {
 //     const { projectId } = req.body; // ดึง project_id จากคำขอ

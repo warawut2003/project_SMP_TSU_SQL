@@ -7,9 +7,9 @@ const  connection  = require("../db.config");
 dot_env.config();
 
 exports.register = async (req,res) => {
-    const {username ,password ,Fname ,Lname ,admin_image ,telephone ,email} = req.body;
+    const {username ,password ,Fname ,Lname  ,telephone ,email} = req.body;
 
-    if(!username ||!password ||!Fname  ||!Lname ||!admin_image||!telephone||!email){
+    if(!username ||!password ||!Fname  ||!Lname ||!telephone||!email){
         return res.status(400).send('Missing required fields');
     }
 
@@ -41,9 +41,9 @@ exports.register = async (req,res) => {
             newAdminId = `${lastLetterPart}${lastNumberPart.toString().padStart(2, '0')}`;
         }
 
-        connection.execute(`INSERT INTO admin(admin_id ,admin_username ,admin_password ,admin_Fname ,admin_Lname ,admin_image ,admin_tel ,admin_email ,	created_at ,updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+        connection.execute(`INSERT INTO admin(admin_id ,admin_username ,admin_password ,admin_Fname ,admin_Lname ,admin_tel ,admin_email ,	created_at ,updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
             [
-                newAdminId,, username, mypass, Fname, Lname, admin_image, telephone, email, now, now
+                newAdminId,, username, mypass, Fname, Lname, telephone, email, now, now
             ]
         );
 
@@ -61,7 +61,7 @@ exports.login = async (req,res) =>{
     const {username , password} = req.body;
     let mypass = crypto.createHash('md5').update(password).digest("hex");
 
-    connection.execute('SELECT admin_username ,admin_Fname ,admin_Lname ,admin_image ,admin_tel ,admin_email ,created_at ,updated_at FROM ADMIN WHERE admin_username=? AND admin_password=?',
+    connection.execute('SELECT * FROM ADMIN WHERE admin_username=? AND admin_password=?',
         [username, mypass]
     ).then((result) =>{
         var data = result[0];
@@ -76,7 +76,8 @@ exports.login = async (req,res) =>{
             );
             const refreshToken = jwt.sign(
                 {userId: data.admin_id},
-                process.env.REFRESH_TOKEN_SECRET
+                process.env.REFRESH_TOKEN_SECRET,
+                {expiresIn : "2h"}
             );
             res.json({user,accessToken, refreshToken});
         }

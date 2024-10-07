@@ -7,9 +7,12 @@
     <title>Login Page</title>
     <link rel="stylesheet" href="/CSS/login.css">
     <link rel="stylesheet" href="/CSS/header.css">
+    <link rel="stylesheet" href="/CSS/popup.css">
     <!-- CSS styles ใส่ในไฟล์นี้หรือ external CSS -->
 </head>
 <body>
+
+   
 
     <!-- Header section -->
     <div class="header">
@@ -25,6 +28,27 @@
             
         </div>
     </div>
+
+
+     <!-- Popup เมื่อเกิดข้อผิดพลาด -->
+     <div id="errorPopup" class="popup-container">
+        <div class="popup-content">
+            <span class="popup-icon"><img src="/assets/icons/cancel.png" alt="wrong"></span>
+            <h2>Login ไม่สำเร็จ</h2>
+            <p>Username หรือ Password ไม่ถูกต้อง</p>
+        </div>
+    </div>
+
+    <!-- Popup เมื่อ login สำเร็จ -->
+<div id="successPopup" class="popup-success-container">
+    <div class="popup-success-content">
+        <span class="popup-success-icon"><img src="/assets/icons/success.png" alt="success"></span>
+        <h2>Login สำเร็จ</h2>
+        <p>กำลังเข้าสู่ระบบ...</p>
+    </div>
+</div>
+
+    
 
     <div class="login-container">
         <h2>สำหรับเจ้าหน้าที่</h2>
@@ -56,18 +80,57 @@
 
             if (response.ok) {
                 const data = await response.json();
-                alert('Login successful!');
+
+                // แสดง popup สำเร็จ
+                showSuccessPopup();
+
+                
                 localStorage.setItem('accessToken', data.accessToken);
                 localStorage.setItem('refreshToken', data.refreshToken);
-
-
                 // Save user details
+                
+                // Redirect หลัง 3 วินาทีเมื่อแสดง popup เสร็จ
                 localStorage.setItem('userName', data.user.admin_Fname + ' ' + data.user.admin_Lname);
-                window.location.href = '/admin/projects';
-            } else {
-                alert('Login failed! Please check your username or password.');
+                localStorage.setItem('admin_id', data.user.admin_id);
+                
+                setTimeout(() => {
+            window.location.href = '/admin/projects';
+        }, 3000);
+            } else{
+                // ถ้า login ไม่สำเร็จ
+                console.log('Login failed, showing error popup');
+                showErrorPopup();
+                document.getElementById('username').style.borderColor = "red";
+                document.getElementById('password').style.borderColor = "red";
             }
         });
+
+
+        function showSuccessPopup() {
+    const popup = document.getElementById('successPopup');
+    popup.style.display = 'flex'; // แสดง popup
+
+    setTimeout(() => {
+        popup.style.display = 'none'; // ปิด popup หลัง 3 วินาที
+    }, 3000);
+}
+
+    function showErrorPopup() {
+        const popup = document.getElementById('errorPopup');
+        popup.style.display = 'flex'; // แสดง popup
+
+            // เมื่อมีการคลิก popup จะปิดทันที
+        popup.addEventListener('click', () => {
+            popup.style.display = 'none';
+        });
+
+
+        setTimeout(() => {
+            popup.style.display = 'none'; // ปิด popup หลัง 3 วินาที
+        }, 3000);
+    }
+
+
     </script>
 </body>
 </html>

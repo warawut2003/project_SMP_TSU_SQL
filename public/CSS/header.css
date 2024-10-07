@@ -2,10 +2,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin: 20px auto; /* เว้นช่องว่างบนและล่าง */
     padding: 20px;
     background-color: #FAF2F2;  /* Light gray background to match the provided design */
     border-bottom: 2px solid #e0e0e0; /* Subtle border for the header */
+    max-width: 1400px; /* กำหนดความกว้างสูงสุด */
+    width: 100%; /* ความกว้าง 90% ของหน้าจอ */
+    box-sizing: border-box; /* ทำให้ padding ไม่เพิ่มความกว้างของ element */
 }
 .header h2 {
     margin-bottom: 10px; /* เว้นระยะระหว่างหัวข้อและคำบรรยาย */

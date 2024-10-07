@@ -5,6 +5,16 @@ const path = require('path');
 
 const { uploadMiddleware } = require('../middlewares/upload');
 
+
+const deleteFile = (filePath) => {
+    return new Promise((resolve, reject) => {
+        fs.unlink(filePath, (err) => {
+            if (err) reject(err);
+            resolve();
+        });
+    });
+};
+
 const generateUserId = async () => {
     const [rows] = await connection.query('SELECT User_id FROM users ORDER BY User_id DESC LIMIT 1');
     let newUserId = 'A001';
@@ -99,9 +109,30 @@ exports.getUsers = async(req,res) =>{
 
 exports.getUser = async(req,res) =>{
     const National_ID = req.params.id;
+    const projectID = req.query.project_id;
 
     try {
-        const [rows] = await connection.execute('SELECT User_id, User_prefix, User_Fname, User_Lname, User_gender, User_Date_Birth, User_age, User_phone_num, User_email, User_status, User_Image, User_file  FROM users WHERE National_ID = ?', [National_ID]);
+        const [rows] = await connection.execute(`
+            SELECT 
+                u.User_id, 
+                u.User_prefix, 
+                u.User_Fname, 
+                u.User_Lname, 
+                u.User_gender, 
+                u.User_Date_Birth, 
+                u.User_age, 
+                u.User_phone_num, 
+                u.User_email, 
+                u.User_status, 
+                u.User_Image, 
+                u.User_file, 
+                p.project_name
+            FROM 
+                users u 
+            INNER JOIN 
+                projects p ON u.project_id_fk = p.project_id 
+            WHERE 
+                u.National_ID = ? AND u.project_id_fk =?`, [National_ID,projectID]);
         if (rows.length > 0) {
             res.status(200).json(rows[0]);
         } else {
@@ -136,15 +167,9 @@ exports.UpdateUser =  async(req,res) =>{
 
     if (rows.length > 0) {
         const oldFile = rows[0].User_file;
-        const oldFilePath = path.join(__dirname, '..', 'uploads', 'User', 'documents', req.params.id, oldFile);
+        const oldFilePath = path.join('uploads', 'User', 'documents', req.params.id, oldFile);
 
-        // ตรวจสอบว่ามีไฟล์เก่าอยู่หรือไม่
-        if (fs.existsSync(oldFilePath)) {
-            // ลบไฟล์เก่า
-            fs.unlink(oldFilePath, (err) => {
-                if (err) console.error('Error deleting old file:', err);
-            });
-        }
+        deleteFile(oldFilePath);
     }
 
     connection.execute("UPDATE users SET User_status=?, User_file=?, update_at=? WHERE User_id=?",

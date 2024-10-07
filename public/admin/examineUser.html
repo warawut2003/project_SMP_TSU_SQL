@@ -6,6 +6,7 @@
     <title>Edit User Status</title>
     <link rel="stylesheet" href="/CSS/examineUser.css">
     <link rel="stylesheet" href="/CSS/header.css">
+    <link rel="stylesheet" href="/CSS/popup.css">
 </head>
 <body>
 
@@ -28,70 +29,95 @@
         </div>
     </div>
 
+    <!-- Popup เมื่อเกิดข้อผิดพลาด -->
+    <div id="errorPopup" class="popup-container">
+        <div class="popup-content">
+            <span class="popup-icon"><img src="/assets/icons/cancel.png" alt="wrong"></span>
+            <h2>ตรวจสอบ ไม่สำเร็จ !!!</h2>
+            <p>เนื่องจากคุณไม่ได้แก้ไข สถานะการตรวจสอบ</p>
+        </div>
+    </div>
+
+    <!-- Popup เมื่อ เพิ่ม สำเร็จ -->
+<div id="successPopup" class="popup-success-container">
+    <div class="popup-add-success-content">
+        <span class="popup-add-success-icon"><img src="/assets/icons/success.png" alt="success"></span>
+        <h2>ตรวจสอบ สำเร็จ</h2>
+        
+    </div>
+</div>
+
     <div class="main-container">
-        <header>
-            <img src="/assets/icons/contact-list.png" alt="Logo" class="logo">
-            <h1>รายชื่อผู้สมัคร (ตรวจสอบ)</h1>
-        </header>
+            <header>
+                <img src="/assets/icons/contact-list.png" alt="Logo" class="logo">
+                <h1>รายชื่อผู้สมัคร (ตรวจสอบ)</h1>
+            </header>
 
-        <!-- รูปภาพของผู้ใช้ -->
-    <div class="user-photo-container">
-        <img id="User_Image_display" src="" alt="User Image" class="user-photo">
-    </div>
+            <!-- รูปภาพของผู้ใช้ -->
+        <div class="user-photo-container">
+            <img id="User_Image_display" src="" alt="User Image" class="user-photo">
+        </div>
 
 
-    <div class="user-info">
-        <div class="info-item">
-            <strong>รหัสผู้สมัคร:</strong>
-            <span id="User_id"></span>
-        </div>
-        <div class="info-item">
-            <strong>รหัสบัตรประชาชน:</strong>
-            <span id="National_ID"></span>
-        </div>
-        <div class="info-item">
-            <strong>ชื่อ:</strong>
-            <span id="User_Fname"></span>
-            <strong>นามสกุล:</strong>
-            <span id="User_Lname"></span>
-            <strong>เพศ:</strong>
-            <span id="User_gender"></span>
-        </div>
-        <div class="info-item">
-            <strong>วันเดือนปีเกิด:</strong>
-            <span id="User_Date_Birth"></span>
-            <strong>อายุ:</strong>
-            <span id="User_age"></span>
-        </div>
-        <div class="info-item">
-            <strong>เบอร์โทรศัพท์:</strong>
-            <span id="phone_num"></span>
-            <strong>Email:</strong>
-            <span id="User_email"></span>
-        </div>
-        <div class="info-item">
-            <strong>ไฟล์เอกสาร:</strong>
-            <a id="User_file_display" href="" target="_blank"></a>
-        </div>
-       
-    </div>
-
-        <form id="UserForm" class="form-container">
-            <label for="User_status">สถานะ:</label>
-            <select id="User_status" name="User_status">
-                <option value="รอการตรวจสอบ">รอการตรวจสอบ</option>
-                <option value="เอกสารครบถ้วน">เอกสารครบถ้วน</option>
-                <option value="เอกสารไม่ครบ">เอกสารไม่ครบ</option>
-            </select>
-
-            <div class="form-buttons">
-                <button type="submit" class="save-button">บันทึก</button>
-                <button type="button" class="cancel-button" onclick="cancelEdit()">ยกเลิก</button>
+        <div class="user-info">
+            <div class="info-item">
+                <strong>รหัสผู้สมัคร:</strong>
+                <span id="User_id"></span>
             </div>
-        </form>
+            
+            <div class="info-item">
+                <strong>รหัสบัตรประชาชน:</strong>
+                <span id="National_ID"></span>
+            </div>
+            <div class="info-item">
+                <strong>ชื่อ:</strong>
+                <span id="User_Fname"></span>
+                <strong>นามสกุล:</strong>
+                <span id="User_Lname"></span>
+                <strong>เพศ:</strong>
+                <span id="User_gender"></span>
+            </div>
+            <div class="info-item">
+                <strong>วันเดือนปีเกิด:</strong>
+                <span id="User_Date_Birth"></span>
+                <strong>อายุ:</strong>
+                <span id="User_age"></span>
+            </div>
+            <div class="info-item">
+                <strong>เบอร์โทรศัพท์:</strong>
+                <span id="phone_num"></span>
+                <strong>Email:</strong>
+                <span id="User_email"></span>
+            </div>
+            
+            <div class="info-item">
+                <strong>ไฟล์เอกสาร:</strong>
+                <a id="User_file_display" href="" target="_blank"></a>
+            </div>
+        
+            </div>
+
+                <form id="UserForm" class="form-container">
+                    <label for="User_status">สถานะ:</label>
+                    <select id="User_status" name="User_status">
+                        <option value="รอการตรวจสอบ">รอการตรวจสอบ</option>
+                        <option value="เอกสารครบถ้วน">เอกสารครบถ้วน</option>
+                        <option value="เอกสารไม่ครบ">เอกสารไม่ครบ</option>
+                    </select>
+
+                    <div class="form-buttons">
+                        <button type="submit" class="save-button">บันทึก</button>
+                        <button type="button" class="cancel-button" onclick="cancelEdit()">ยกเลิก</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
     </div>
 
     <script>
+
+        let originalStatus = ''; // ตัวแปรเก็บค่า User_status เดิม
         
         // Retrieve token from localStorage
         const accessToken = localStorage.getItem('accessToken');
@@ -111,9 +137,12 @@
 
         // Function to load user data
         async function loadUserData() {
+
+            checkToken();
+
             const urlParams = new URLSearchParams(window.location.search);
             const userID = urlParams.get('id');
-            console.log(userID);
+
             try {
                 const response = await fetch(`/api/admin/get/user/${userID}`, {
                     headers: {
@@ -135,6 +164,8 @@
                 document.getElementById('User_email').textContent = data.User_email;
                 document.getElementById('User_status').value = data.User_status;
 
+                originalStatus = data.User_status; // เก็บค่า User_status เดิม
+
                 ProjectID = data.project_id_fk;
                 // Set image and file links
                 document.getElementById('User_Image_display').src = `/uploads/User/images/${data.User_id}/${data.User_Image}`;
@@ -150,13 +181,20 @@
         document.getElementById('UserForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
+            checkToken();
+
             const statusValue = document.getElementById('User_status').value;
-            console.log(statusValue);
-            console.log(ProjectID);
+            const adminId = localStorage.getItem('admin_id'); 
 
             const urlParams = new URLSearchParams(window.location.search);
             const userID = urlParams.get('id');
 
+            if(statusValue === originalStatus){
+                // ถ้าไม่มีการเปลี่ยนแปลงสถานะ
+                showErrorPopup();
+            }else{
+
+            
             try {
                 const response = await fetch(`/api/admin/update/user/${userID}`, {
                     method: 'PUT',
@@ -165,13 +203,14 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        User_status: statusValue
+                        User_status: statusValue,
+                        admin_id :adminId
                     })
                 });
 
                 if (response.ok) {
-                    alert('Status updated successfully!');
-                    window.location.href = `/admin/list/users?id=${ProjectID}`; // Redirect or update as needed
+                    showSuccessPopup();
+
                 } else {
                     alert('Failed to update status: ' + await response.text());
                 }
@@ -179,13 +218,52 @@
                 console.error('Error:', error);
                 alert('An error occurred: ' + error.message);
             }
+        }
         });
 
         document.getElementById('adminName').textContent = localStorage.getItem('userName');
 
+        function showSuccessPopup() {
+        const popup = document.getElementById('successPopup');
+        popup.style.display = 'flex'; // แสดง popup
+
+    setTimeout(() => {
+        popup.style.display = 'none'; // ปิด popup หลัง 3 วินาที
+        window.location.href = `/admin/list/users?id=${ProjectID}`; // Redirect or update as needed
+    }, 2000);
+}
+
+    function showErrorPopup() {
+        const popup = document.getElementById('errorPopup');
+        popup.style.display = 'flex'; // แสดง popup
+
+            // เมื่อมีการคลิก popup จะปิดทันที
+        popup.addEventListener('click', () => {
+            popup.style.display = 'none';
+        });
+
+
+        setTimeout(() => {
+            popup.style.display = 'none'; // ปิด popup หลัง 3 วินาที
+            
+        }, 2000);
+
+
+    }
+
+    function checkToken(){
+            if (!accessToken) {
+                alert('Access token not found. Please login again.');
+                logout();
+                return;
+            }
+        }
+
         function logout() {
             localStorage.removeItem('accessToken'); // Clear the token
+            localStorage.removeItem('refreshToken'); 
             localStorage.removeItem('userName'); // Clear the username
+            localStorage.removeItem('admin_id'); 
             window.location.href = '/smp/sci/tsu'; // Redirect to login page after logout
         }
 

@@ -6,6 +6,7 @@
     <title>ค้นหาผู้ใช้ตามเลขบัตรประชาชน</title>
     <link rel="stylesheet" href="/CSS/user_search.css">
     <link rel="stylesheet" href="/CSS/header.css">
+    <link rel="stylesheet" href="/CSS/popup.css">
 </head>
 <body>
 
@@ -19,10 +20,18 @@
             <h2>โครงการ วมว. - มอ.ทักษิณ</h2>
             <p>โครงการห้องวิทยาศาสตร์ในโรงเรียนป่าพะยอมพิทยาคม โดยการกำกับดูแลมหาลับทักษิณ</p>
         </div>
-        <div class="admin-info dropdown">
-            
+        <div class="admin-info dropdown"></div>
+    </div>
+
+    <!-- Popup เมื่อ เพิ่ม สำเร็จ -->
+    <div id="successPopup" class="popup-success-container">
+        <div class="popup-add-success-content">
+            <span class="popup-add-success-icon"><img src="/assets/icons/success.png" alt="success"></span>
+            <h2>อัปโหลดไฟล์ สำเร็จ</h2>
         </div>
     </div>
+
+        
 
     <h1>ค้นหาผู้ใช้ตามเลขบัตรประชาชน <img src="/assets/icons/search.png" alt="Add Icon" style="height: 40px; width: 40px;"></h1>
     <!-- ฟอร์มค้นหาผู้ใช้ -->
@@ -39,6 +48,8 @@
 
     <script>
 
+        const projectID = localStorage.getItem('project_id') || '';
+
         // ฟังก์ชันสำหรับกลับไปยังหน้าก่อนหน้า
         function goBack() {
             window.location.href = '/users/project';
@@ -48,7 +59,7 @@
         event.preventDefault(); // หยุดการรีเฟรชหน้าเว็บ
 
         const nationalID = document.getElementById('nationalID').value;
-        const response = await fetch(`/api/user/${nationalID}`, {
+        const response = await fetch(`/api/user/${nationalID}?project_id=${projectID}`, {
             method: 'GET'
         });
 
@@ -69,6 +80,8 @@
     <p><strong>รหัสผู้สมัคร:</strong> ${userData.User_id}</p>
     <p></p> <!-- ช่องว่าง (empty cell) -->
 
+    <p><strong>โครงการ:</strong> ${userData.project_name}</p>
+    <p></p> <!-- ช่องว่าง (empty cell) -->
 
     <p><strong>ชื่อ:</strong> ${userData.User_Fname}</p>
     <p><strong>นามสกุล:</strong> ${userData.User_Lname}</p>
@@ -83,9 +96,6 @@
 
     <p><strong>อีเมล:</strong> ${userData.User_email}</p>
     <p><strong>สถานะ:</strong> ${userData.User_status}</p>
-
-    <p><strong>ชื่อไฟล์ภาพ:</strong> ${userData.User_Image}</p>
-    <p><strong>ชื่อไฟล์เอกสาร:</strong> ${userData.User_file}</p>
 
 </div>
 
@@ -124,8 +134,7 @@
                         });
 
                         if (uploadResponse.ok) {
-                            alert('ไฟล์ถูกอัปโหลดเรียบร้อยแล้ว!');
-                            location.reload(); // รีเฟรชหน้าเว็บเพื่อแสดงผลการเปลี่ยนแปลง
+                            showSuccessPopup();
                         } else {
                             alert('การอัปโหลดไฟล์ล้มเหลว: ' + await uploadResponse.text());
                         }
@@ -134,6 +143,16 @@
                         alert('เกิดข้อผิดพลาด: ' + error.message);
                     }
                 });
+
+                function showSuccessPopup() {
+                    const popup = document.getElementById('successPopup');
+                    popup.style.display = 'flex'; // แสดง popup
+
+                    setTimeout(() => {
+                        popup.style.display = 'none'; // ปิด popup หลัง 3 วินาที
+                        location.reload(); // รีเฟรชหน้าเว็บเพื่อแสดงผลการเปลี่ยนแปลง
+                    }, 3000);
+                }   
 
                 document.getElementById('customFileButton').addEventListener('click', function() {
                     document.getElementById('newFile').click();

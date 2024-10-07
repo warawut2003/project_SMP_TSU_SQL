@@ -214,6 +214,7 @@ button[type="submit"]:hover {
 
 .formUser , .uploadForm {
     margin-left: 100px;
+    padding-bottom: 30px;
 }
 
 .back-button{

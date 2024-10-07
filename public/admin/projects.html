@@ -6,6 +6,8 @@
     <title>Projects</title>
     <link rel="stylesheet" href="/CSS/table_project.css">
     <link rel="stylesheet" href="/CSS/header.css">
+    <link rel="stylesheet" href="/CSS/btn-back-next.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="header">
@@ -27,34 +29,55 @@
         </div>
     </div>
 
-    <h2>รายการโครงการ <img src="/assets/icons/to-do-list.png" alt="Add Icon" style="height: 40px; width: 40px;"> </h2> 
-    <button class="add-button" onclick="window.location.href = '/admin/add/project';">
-        ADD
-        <img src="/assets/icons/add.png" alt="Add Icon">
-    </button>
 
-    <table id="projectsTable">
-        <thead>
-            <tr>
-                <th>ลำดับ</th> <!-- New Rank column -->
-                <th>รหัสโครงการ</th>
-                <th>ชื่อโครงการ</th>
-                <th>วันเปิดรับสมัคร</th>
-                <th>วันปิดรับสมัคร</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data rows will be inserted here dynamically -->
-        </tbody>
-    </table>
 
+
+    <div class="table-project-container">
+
+        <h2>รายการโครงการ <img src="/assets/icons/to-do-list.png" alt="Add Icon" style="height: 40px; width: 40px;"> </h2> 
+        <button class="add-button" onclick="window.location.href = '/admin/add/project';">
+            ADD
+            <img src="/assets/icons/add.png" alt="Add Icon">
+        </button>
+
+        <table id="projectsTable">
+            <thead>
+                <tr>
+                    <th>ลำดับ</th> <!-- New Rank column -->
+                    <th>รหัสโครงการ</th>
+                    <th>ชื่อโครงการ</th>
+                    <th>วันเปิดรับสมัคร</th>
+                    <th>วันปิดรับสมัคร</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                
+            </tbody>
+        </table>
+        <div id="pagination" class="btn-next-back">
+            <button id="prevBtn" class="pagination-btn-back" onclick="prevPage()">
+                <i class="fas fa-chevron-left"></i> ย้อนกลับ
+            </button>
+            <span id="pageNumbers"></span>
+            <button id="nextBtn" class="pagination-btn-next" onclick="nextPage()">
+                ถัดไป <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
     <script>
+
+        let currentPage = 1;
+        const rowsPerPage = 5;
+        let projectsData = [];
+        const accessToken = localStorage.getItem('accessToken');
 
          // Logout function
          function logout() {
             localStorage.removeItem('accessToken'); // Clear the token
+            localStorage.removeItem('refreshToken'); 
             localStorage.removeItem('userName'); // Clear the username
+            localStorage.removeItem('admin_id'); 
             window.location.href = '/smp/sci/tsu'; // Redirect to login page after logout
         }
         function formatDate(dateString) {
@@ -72,13 +95,8 @@
         }
 
         async function fetchProjects() {
-            const accessToken = localStorage.getItem('accessToken');
-
-            if (!accessToken) {
-                alert('Access token not found. Please login again.');
-                window.location.href = '/smp/sci/tsu'; // Redirect to login page
-                return;
-            }
+            
+            checkToken();
 
             try {
                 const response = await fetch('/api/admin/projects', {
@@ -91,23 +109,9 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    const table = document.getElementById('projectsTable');
-                    data.forEach((project , index)=> {
-                        const row = table.insertRow();
-                        row.insertCell(0).textContent = index + 1; // Rank column
-                        row.insertCell(1).textContent = project.project_id;
-                        row.insertCell(2).textContent = project.project_name;
-                        row.insertCell(3).textContent = formatDate(project.project_start_date);
-                        row.insertCell(4).textContent = formatDate(project.project_expiration_date);
-                        
-                        const actionsCell = row.insertCell(5);
-                        actionsCell.innerHTML = `
-                            <span class="action-icons">
-                                <img src="/assets/icons/research.png" onclick="viewProject('${project.project_id}')" title="View">
-                                
-                            </span>
-                        `;
-                    });
+                    projectsData = data; // Store fetched data
+                    displayProjects();   // Initial display of the first page
+                    setupPagination();   // Setup pagination numbers
                 } else {
                     throw new Error('Unauthorized or error fetching project data');
                 }
@@ -118,11 +122,73 @@
             }
         }
 
+        function displayProjects() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = ''; // Clear the table
+
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const currentProjects = projectsData.slice(start, end);
+
+            currentProjects.forEach((project, index) => {
+                const row = tableBody.insertRow();
+                row.insertCell(0).textContent = start + index + 1;
+                row.insertCell(1).textContent = project.project_id;
+                row.insertCell(2).textContent = project.project_name;
+                row.insertCell(3).textContent = formatDate(project.project_start_date);
+                row.insertCell(4).textContent = formatDate(project.project_expiration_date);
+
+                const actionsCell = row.insertCell(5);
+                actionsCell.innerHTML = `
+                    <span class="action-icons">
+                        <img src="/assets/icons/research.png" onclick="viewProject('${project.project_id}')">
+                        <span class="tooltip">ตรวจสอบ</span>
+                    </span>
+                `;
+            });
+
+            document.getElementById('pageNumbers').textContent = `Page ${currentPage}`;
+        }
+
+        function setupPagination() {
+            const pageCount = Math.ceil(projectsData.length / rowsPerPage);
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === pageCount;
+
+            document.getElementById('pageNumbers').textContent = `Page ${currentPage} of ${pageCount}`;
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayProjects();
+                setupPagination();
+            }
+        }
+
+        function nextPage() {
+            const pageCount = Math.ceil(projectsData.length / rowsPerPage);
+            if (currentPage < pageCount) {
+                currentPage++;
+                displayProjects();
+                setupPagination();
+            }
+        }
+
         function viewProject(projectId) {
             window.location.href = `/admin/project/view/?id=${projectId}`;
         }
 
-    
+        function checkToken(){
+            if (!accessToken) {
+                alert('Access token not found. Please login again.');
+                logout();
+                return;
+            }
+        }
         
         // Set admin name on page load
         document.getElementById('adminName').textContent = localStorage.getItem('userName');

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apply for Project</title>
     <link rel="stylesheet" href="/CSS/user_register.css">
+    <link rel="stylesheet" href="/CSS/popup.css">
     <link rel="stylesheet" href="/CSS/header.css">
 </head>
 <body>
@@ -24,20 +25,60 @@
         </div>
     </div>
 
+    <div id="confirmCancelPopup" class="popup-delete-container">
+        <div class="popup-confirm-content">
+            <span class="popup-delete-icon"><img src="/assets/icons/warning.png" alt="warning"></span>
+            <h2>ยกเลิกการสมัคร!!!</h2>
+            <p>คุณแน่ใจหรือไม่ว่าต้องการยกเลิก?</p>
+            <div class="btn-confirm">
+                <button class="confirm-content" onclick="confirmCancel()">ยืนยัน</button>
+                <button class="cancel-content" onclick="cancelPopup()">ยกเลิก</button>
+            </div>
+            
+        </div>
+        
+    </div>
+
+    <!-- Popup เมื่อ เพิ่ม สำเร็จ -->
+<div id="successPopup" class="popup-success-container">
+    <div class="popup-add-success-content">
+        <span class="popup-add-success-icon"><img src="/assets/icons/success.png" alt="success"></span>
+        <h2>สมัคร สำเร็จ!!!</h2>
+        
+    </div>
+</div>
+
+<!-- Popup เมื่อเกิดข้อผิดพลาด -->
+<div id="errorPopup" class="popup-container">
+    <div class="popup-content">
+        <span class="popup-icon"><img src="/assets/icons/cancel.png" alt="wrong"></span>
+        <h2>สมัคร ไม่สำเร็จ</h2>
+        <p>เนื่องจากคุณกรอกข้อมูล ไม่ครบถ้วน</p>
+    </div>
+</div>
+
     <h1>สมัครเข้าโครงการ <img src="/assets/icons/register.png" alt="Add Icon" style="height: 40px; width: 40px;"></h1>
     <form id="UserForm" enctype="multipart/form-data">
 
         <!-- เพิ่ม input hidden ถ้าต้องการใช้ project_id_fk -->
         <input type="hidden" id="project_id_fk" name="project_id_fk">
 
+        <span id="National_ID_Error" class="error-message-input" style="display: none;">กรุณารหัสบัตรประชาชนให้ถูกต้อง</span>
         <div class="form-group">
             <label for="National_ID">National ID:</label>
             <input type="text" id="National_ID" name="National_ID" required>
+            
         </div>
+        
         
         <div class="form-group">
             <label for="User_prefix">Prefix:</label>
-            <input type="text" id="User_prefix" name="User_prefix" required>
+            <select id="User_prefix" name="User_prefix" required>
+                <option value="" disabled selected>เลือกคำนำหน้า</option>
+                <option value="นาย">นาย</option>
+                <option value="นางสาว">นางสาว</option>
+                <option value="นาง">นาง</option>
+            </select>
         </div>
     
         <div class="form-group">
@@ -52,7 +93,12 @@
     
         <div class="form-group">
             <label for="User_gender">Gender:</label>
-            <input type="text" id="User_gender" name="User_gender" required>
+            <select id="User_gender" name="User_gender" required>
+                <option value="" disabled selected>เลือกเพศ</option>
+                <option value="ชาย">ชาย</option>
+                <option value="หญิง">หญิง</option>
+                <option value="อื่นๆ">อื่นๆ</option>
+            </select>
         </div>
     
         <div class="form-group">
@@ -64,11 +110,15 @@
             <label for="User_age">Age:</label>
             <input type="number" id="User_age" name="User_age" required>
         </div>
-    
+
+        <span id="PhoneNumError" class="error-message-input" style=" display: none;">กรุณาเบอร์โทรศัพน์ให้ถูกต้อง</span>
         <div class="form-group">
             <label for="phone_num">Phone Number:</label>
             <input type="text" id="phone_num" name="phone_num" required>
+            
         </div>
+        
+        
     
         <div class="form-group">
             <label for="User_email">Email:</label>
@@ -77,14 +127,25 @@
     
         <div class="form-group">
             <label for="User_Image">Image:</label>
-            <input type="file" id="User_Image" name="User_Image" required>
+            <div class="add-file-container">
+                <button type="button" class="add-file-button" onclick="document.getElementById('User_Image').click()">Add Image</button>
+                <input type="file" id="User_Image" name="User_Image" accept="image/*" style="display: none;">
+                <img id="imagePreview" class="image-preview" src="" alt="No image selected" style="display: none;">
+                <span id="imageFileName">ยังไม่ได้เลือกไฟล์</span> <!-- Display selected file name -->
+                <span id="imageError" class="error-message" style=" display: none;">กรุณาเพิ่มรูปภาพ</span>
+            </div>
         </div>
 
         <input type="hidden" id="User_status" value="รอการตรวจสอบ">
     
         <div class="form-group">
             <label for="User_file">File:</label>
-            <input type="file" id="User_file" name="User_file" required>
+            <div class="add-file-container">
+                <button type="button" class="add-file-button" onclick="document.getElementById('User_file').click()">Add File</button>
+                <input type="file" id="User_file" name="User_file" accept=".pdf,.doc,.docx,.zip" style="display: none;">
+                <span id="fileFileName">ยังไม่ได้เลือกไฟล์</span> <!-- Display selected file name -->
+                <span id="fileError" class="error-message" style=" display: none;">กรุณาเพิ่มไฟล์</span>
+            </div>
         </div>
     
         <!-- ปุ่มสมัครและยกเลิก -->
@@ -100,34 +161,108 @@
         // localStorage.removeItem('project_id');
 
         console.log('Project ID:', document.getElementById('project_id_fk').value);
+
+        // Preview image and update file name for the image
+        document.getElementById('User_Image').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('imageFileName').textContent = file.name;
+                document.getElementById('imageError').style.display = 'none'; // ซ่อนข้อความข้อผิดพลาด
+
+                // Display image preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').style.display = 'block';
+                    document.getElementById('imagePreview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('imageFileName').textContent = 'ยังไม่ได้เลือกไฟล์';
+                document.getElementById('imagePreview').style.display = 'none';
+            }
+        });
+
+        // Update file name for User_file
+        document.getElementById('User_file').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('fileFileName').textContent = file.name;
+                document.getElementById('fileError').style.display = 'none'; // ซ่อนข้อความข้อผิดพลาด
+            } else {
+                document.getElementById('fileFileName').textContent = 'ยังไม่ได้เลือกไฟล์';
+            }
+        });
         
         
 
         document.getElementById('UserForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
+            const userImage = document.getElementById('User_Image').files[0];
+            const userFile = document.getElementById('User_file').files[0];
+            const nationalID = document.getElementById('National_ID').value;
+            const phoneNumber = document.getElementById('phone_num').value;
+
+            
+            let hasError = false;
+
+            // ตรวจสอบว่ารหัสประชาชนเป็นตัวเลขและมีความยาว 13 ตัวอักษร
+            if (nationalID.length !== 13 || isNaN(nationalID)) {
+                document.getElementById('National_ID_Error').style.display = 'block'; // แสดงข้อผิดพลาด
+                hasError = true;
+            } else {
+                document.getElementById('National_ID_Error').style.display = 'none'; // ซ่อนข้อผิดพลาด
+            }
+
+            // ตรวจสอบว่าเบอร์โทรศัพท์เป็นตัวเลขและมีความยาว 10 ตัวอักษร
+            if (phoneNumber.length !== 10 || isNaN(phoneNumber)) {
+                document.getElementById('PhoneNumError').style.display = 'block'; // แสดงข้อผิดพลาด
+                hasError = true;
+            } else {
+                document.getElementById('PhoneNumError').style.display = 'none'; // ซ่อนข้อผิดพลาด
+            }
+
+            // Check if the image is selected
+            if (!userImage) {
+                document.getElementById('imageError').style.display = 'inline'; // Show error
+                hasError = true;
+            } else {
+                document.getElementById('imageError').style.display = 'none'; // Hide error
+            }
+
+            // Check if the file is selected
+            if (!userFile) {
+                document.getElementById('fileError').style.display = 'inline'; // Show error
+                hasError = true;
+            } else {
+                document.getElementById('fileError').style.display = 'none'; // Hide error
+            }
+
+            // Prevent form submission if there's an error
+            if (hasError) {
+                showErrorPopup();
+                return;
+            }
+
             // สร้าง FormData object
             const formData = new FormData();
             
-            formData.append('National_ID', document.getElementById('National_ID').value);
+            formData.append('National_ID', nationalID);
             formData.append('User_prefix', document.getElementById('User_prefix').value);
             formData.append('User_Fname', document.getElementById('User_Fname').value);
             formData.append('User_Lname', document.getElementById('User_Lname').value);
             formData.append('User_gender', document.getElementById('User_gender').value);
             formData.append('User_Date_Birth', document.getElementById('User_Date_Birth').value);
             formData.append('User_age', document.getElementById('User_age').value);
-            formData.append('phone_num', document.getElementById('phone_num').value);
+            formData.append('phone_num', phoneNumber);
             formData.append('User_email', document.getElementById('User_email').value);
             formData.append('User_status', document.getElementById('User_status').value);
-            formData.append('User_Image', document.getElementById('User_Image').files[0]);
-            formData.append('User_file', document.getElementById('User_file').files[0]);
+            formData.append('User_Image', userImage);
+            formData.append('User_file', userFile);
             formData.append('project_id_fk', document.getElementById('project_id_fk').value);
 
 
-            // ตรวจสอบข้อมูลใน FormData
-    for (let pair of formData.entries()) {
-        console.log(pair[0]+ ', ' + pair[1]); 
-    }
+            
 
         
             try {
@@ -137,8 +272,8 @@
                 });
 
                 if (response.ok) {
-                    alert('Application submitted successfully!');
-                    window.location.href = '/users/project'; // Redirect or update as needed
+                    showSuccessPopup();
+                    
                 } else {
                     alert('Failed to submit application: ' + await response.text());
                 }
@@ -148,19 +283,43 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const cancelButton = document.getElementById('cancelButton');
-            
-            if (cancelButton) {
-                cancelButton.addEventListener('click', function() {
-                    if (confirm("คุณแน่ใจหรือไม่ว่าต้องการยกเลิก?")) {
-                        window.location.href = '/users/project'; // หรือเส้นทางที่ต้องการ
-                    }
-                });
-            } else {
-                console.error('Cancel button not found.');
-            }
+        function showSuccessPopup() {
+            const popup = document.getElementById('successPopup');
+            popup.style.display = 'flex'; // แสดง popup
+
+            setTimeout(() => {
+                popup.style.display = 'none'; 
+                window.location.href = '/users/project'; // Redirect or update as needed
+            }, 2000);
+        }
+
+        function showErrorPopup() {
+            console.log("Showing error popup");
+            const popup = document.getElementById('errorPopup');
+            popup.style.display = 'flex'; // Show the error popup
+
+            setTimeout(() => {
+                popup.style.display = 'none'; // Hide after 2 seconds
+            }, 2000);
+        }
+
+    
+
+        document.getElementById('cancelButton').addEventListener('click', function() {
+            showCancelPopup();
         });
+
+        function showCancelPopup() {
+            document.getElementById('confirmCancelPopup').style.display = 'flex';
+        }
+
+        function cancelPopup() {
+            document.getElementById('confirmCancelPopup').style.display = 'none'; // Close popup if cancelled
+        }
+
+        function confirmCancel() {
+            window.location.href = '/users/project'; // Redirect when cancellation is confirmed
+        }
         
 
     </script>

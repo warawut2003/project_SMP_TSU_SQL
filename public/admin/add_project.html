@@ -6,6 +6,7 @@
     <title>Project Management</title>
     <link rel="stylesheet" href="/CSS/header.css">
     <link rel="stylesheet" href="/CSS/project_form.css">
+    <link rel="stylesheet" href="/CSS/popup.css">
     
 </head>
 <body>
@@ -29,36 +30,63 @@
         </div>
     </div>
 
-    <h1>เพิ่มโครงการ</h1>
+
+    <div class="header-title">
+        <h1>เพิ่มโครงการ</h1>
+        <img src="/assets/icons/add-file.png" alt="" style="height: 45px; width: 45px;">
+    </div>
+
+    <!-- Popup เมื่อเกิดข้อผิดพลาด -->
+    <div id="errorPopup" class="popup-container">
+        <div class="popup-content">
+            <span class="popup-icon"><img src="/assets/icons/cancel.png" alt="wrong"></span>
+            <h2>เพิ่มโครงการ ไม่สำเร็จ</h2>
+            <p>เนื่องจากคุณกรอกข้อมูลโครงการ ไม่ครบถ้วน</p>
+        </div>
+    </div>
+
+    <!-- Popup เมื่อ เพิ่ม สำเร็จ -->
+    <div id="successPopup" class="popup-success-container">
+        <div class="popup-add-success-content">
+            <span class="popup-add-success-icon"><img src="/assets/icons/success.png" alt="success"></span>
+            <h2>เพิ่มโครงการ สำเร็จ</h2>
+        </div>
+    </div>
+    
+
+
 
     <div class="form-container">
         <form id="projectForm" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="projectName">ชื่อ :</label>
-                <input type="text" id="projectName" name="projectName" required>
+                <input type="text" id="projectName" name="projectName">
             </div>
 
             <div class="form-group">
                 <label for="openDay">วันเปิดรับสมัคร:</label>
-                <input type="datetime-local" id="openDay" name="openDay" required>
-                <img src="/assets/icons/schedule.png" alt="Calendar Icon" class="icon" data-input-id="openDay">
+                <input type="datetime-local" id="openDay" name="openDay">
+
             </div>
             
             <div class="form-group">
                 <label for="turnOffDay">วันหมดเขต:</label>
-                <input type="datetime-local" id="turnOffDay" name="turnOffDay" required>
-                <img src="/assets/icons/schedule.png" alt="Calendar Icon" class="icon" data-input-id="turnOffDay">
+                <input type="datetime-local" id="turnOffDay" name="turnOffDay">
+
             </div>
 
             <div class="form-group">
                 <label for="projectFile">เอกสาร :</label>
                 <div class="add-file-container">
+                    
                     <button type="button" class="add-file-button" onclick="document.getElementById('projectFile').click()">Add file</button>
                     <input type="file" id="projectFile" name="projectFile" accept=".pdf,.doc,.docx,.zip">
+                    <iframe id="projectFilePreview"></iframe> <!-- Hide this iframe initially -->
                     <span id="fileName">ยังไม่ได้เลือกไฟล์</span> <!-- Display selected file name -->
+                    
                 </div>
             </div>
-
+           
             <div class="form-actions">
                 <button type="submit" class="submit-button">ยืนยัน</button>
                 <button type="button" class="cancel-button" onclick="window.location.href='/admin/projects';">ยกเลิก</button>
@@ -67,30 +95,113 @@
     </div>
 
     <script>
+        const accessToken = localStorage.getItem('accessToken');
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get today's date in the format 'YYYY-MM-DDTHH:MM' for datetime-local input
+        const today = new Date().toISOString().slice(0, 16);
+        
+        // Set the min attribute to today for both openDay and turnOffDay
+        document.getElementById('openDay').setAttribute('min', today);
+        
+
+        // Update the min date of turnOffDay based on openDay selection
+        document.getElementById('openDay').addEventListener('change', function() {
+            const selectedOpenDay = this.value; // Get the selected openDay value
+            document.getElementById('turnOffDay').setAttribute('min', selectedOpenDay); // Set it as the min for turnOffDay
+        });
+
+    });
+
+    // เพิ่ม event listener สำหรับการกรอกข้อมูลในฟิลด์
+document.getElementById('projectName').addEventListener('input', function() {
+    resetErrorStyles(); // รีเซ็ตสไตล์เมื่อมีการกรอกข้อมูล
+});
+
+document.getElementById('openDay').addEventListener('input', function() {
+    resetErrorStyles(); // รีเซ็ตสไตล์เมื่อมีการกรอกข้อมูล
+});
+
+document.getElementById('turnOffDay').addEventListener('input', function() {
+    resetErrorStyles(); // รีเซ็ตสไตล์เมื่อมีการกรอกข้อมูล
+});
 
 
 
         document.getElementById('projectFile').addEventListener('change', function() {
             const fileName = this.files[0] ? this.files[0].name : 'ยังไม่ได้เลือกไฟล์';
+            const fileNameDisplay = document.getElementById('fileName'); // อ้างอิงข้อความแสดงชื่อไฟล์
+
             document.getElementById('fileName').textContent = fileName;
+
+            // เปลี่ยนสีข้อความกลับเป็นสีปกติเมื่อเลือกไฟล์
+        fileNameDisplay.style.color = ''; // รีเซ็ตเป็นสีเริ่มต้น
+
+           // Show the document preview in iframe
+           if (this.files[0]) {
+                const fileURL = URL.createObjectURL(this.files[0]);
+                const iframe = document.getElementById('projectFilePreview');
+                iframe.src = fileURL;
+                iframe.style.display = 'block'; // Show the iframe when a file is selected
+            } else {
+                document.getElementById('projectFilePreview').src = ''; // Reset if no file
+                document.getElementById('projectFilePreview').style.display = 'none'; // Hide iframe when no file
+            }
+
         });
 
         document.getElementById('projectForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
-            const accessToken = localStorage.getItem('accessToken');
+            resetErrorStyles();
 
-            if (!accessToken) {
-                alert('Access token not found. Please login again.');
-                window.location.href = '/smp/sci/tsu'; // Redirect to login page
-                return;
+            
+            
+            const adminId = localStorage.getItem('admin_id'); 
+
+            checkToken();
+            
+        const projectName = document.getElementById('projectName').value.trim();
+        const openDay = document.getElementById('openDay').value;
+        const turnOffDay = document.getElementById('turnOffDay').value;
+        const projectFile = document.getElementById('projectFile').files[0];
+        const fileNameDisplay = document.getElementById('fileName'); // อ้างอิงข้อความแสดงชื่อไฟล์
+        
+
+            let hasError = false;
+
+            if (!projectName) {
+                highlightErrorField('projectName');
+                hasError = true;
+            }
+            if (!openDay) {
+                highlightErrorField('openDay');
+                hasError = true;
+            }
+            if (!turnOffDay) {
+                highlightErrorField('turnOffDay');
+                hasError = true;
+            }
+            if (!projectFile) {
+                fileNameDisplay.style.color = 'red';
+                hasError = true;
             }
 
+            if (hasError) {
+                showErrorPopup();
+                return; // Stop the form from submitting
+            }
+            
+
             const formData = new FormData();
-            formData.append('ProjectName', document.getElementById('projectName').value);
-            formData.append('Openday', document.getElementById('openDay').value);
-            formData.append('Turnoffday', document.getElementById('turnOffDay').value);
-            formData.append('ProjectFile', document.getElementById('projectFile').files[0]);
+            formData.append('ProjectName', projectName);
+            formData.append('Openday', openDay);
+            formData.append('Turnoffday', turnOffDay);
+            formData.append('ProjectFile', projectFile);
+            formData.append('admin_id', adminId); 
+
+         
+
 
             try {
                 const response = await fetch('/api/admin/create/project', {
@@ -102,10 +213,10 @@
                 });
 
                 if (response.ok) {
-                    alert('Project added successfully!');
-                    window.location.href = '/admin/projects'; 
+                    showSuccessPopup();
+                    
                 } else {
-                    alert('Failed to add project: ' + await response.text());
+                    console.log('Insert failed, showing error popup');
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -113,15 +224,71 @@
             }
         });
 
+
+    function showSuccessPopup() {
+        const popup = document.getElementById('successPopup');
+        popup.style.display = 'flex'; // แสดง popup
+
+    setTimeout(() => {
+        popup.style.display = 'none'; // ปิด popup หลัง 3 วินาที
+        window.location.href = '/admin/projects'; 
+    }, 3000);
+}
+
+    function showErrorPopup() {
+        const popup = document.getElementById('errorPopup');
+        popup.style.display = 'flex'; // แสดง popup
+
+            // เมื่อมีการคลิก popup จะปิดทันที
+        popup.addEventListener('click', () => {
+            popup.style.display = 'none';
+        });
+
+
+        setTimeout(() => {
+            popup.style.display = 'none'; // ปิด popup หลัง 3 วินาที
+        }, 3000);
+    }
+
+    function highlightErrorField(fieldId) {
+    const field = document.getElementById(fieldId);
+    field.style.border = '2px solid red'; // Highlight with red border
+}
+
+function resetErrorStyles() {
+    const fields = ['projectName', 'openDay', 'turnOffDay', 'projectFile'];
+    fields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        field.style.border = ''; // Reset border to default
+    });
+
+    // รีเซ็ตสีข้อความแสดงชื่อไฟล์กลับเป็นสีปกติ
+    const fileNameDisplay = document.getElementById('fileName');
+    fileNameDisplay.style.color = ''; // รีเซ็ตเป็นสีเริ่มต้น
+}
+
         document.getElementById('adminName').textContent = localStorage.getItem('userName');
 
+        
+        function checkToken(){
+            
+            if (!accessToken) {
+                alert('Access token not found. Please login again.');
+                logout();
+                return;
+            }
+        }
         
 
         function logout() {
             localStorage.removeItem('accessToken'); // Clear the token
+            localStorage.removeItem('refreshToken'); 
             localStorage.removeItem('userName'); // Clear the username
+            localStorage.removeItem('admin_id'); 
             window.location.href = '/smp/sci/tsu'; // Redirect to login page after logout
         }
+
+
     </script>
 </body>
 </html>

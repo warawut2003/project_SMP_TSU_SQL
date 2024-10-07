@@ -13,7 +13,7 @@ body {
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 400px;
+    width: 700px;
     text-align: left;
     position: absolute; /* Allows centering using transform */
     top: 50%; /* Position top edge at the middle of the viewport */
@@ -27,12 +27,14 @@ body {
     color: #333;
     margin-bottom: 20px;
     text-align: left;
+    padding-bottom: 10px; /* เพิ่ม padding ให้มีระยะห่างระหว่างหัวข้อกับเส้น */
+    border-bottom: 2px solid #ddd; /* เส้นตีกรอบด้านล่าง */
 }
 
 /* Input Fields Styling */
 input[type="text"],
 input[type="password"] {
-    width: 100%;
+    width: 60%;
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ddd;
@@ -41,6 +43,7 @@ input[type="password"] {
     background-color: #f8e3e3;
     color: #333;
     box-sizing: border-box;
+    margin-left: 10%; /* เว้นระยะจากขอบซ้ายของ container */
 }
 
 /* Label Styling */
@@ -48,12 +51,15 @@ label {
     font-size: 16px;
     color: #333;
     margin-bottom: 5px;
-    display: block;
+    display: inline-block;
+    width: 20%; /* กำหนดความกว้างให้ label */
+    text-align: right; /* จัดให้ข้อความอยู่ชิดขวา */
+
 }
 
 /* Login Button */
 button {
-    width: 100%;
+    width: 20%;
     padding: 10px;
     font-size: 16px;
     background-color: #4CAF50;
@@ -62,6 +68,7 @@ button {
     color: white;
     cursor: pointer;
     margin-top: 10px;
+    margin-left: 30%; /* เว้นระยะจากขอบซ้ายของ container */
 }
 
 button:hover {
@@ -72,3 +79,7 @@ button:hover {
 .header {
     margin-bottom: 20px; /* Adjust if you need more or less space between header and form */
 }
+
+
+
+

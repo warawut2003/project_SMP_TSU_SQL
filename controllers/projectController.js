@@ -249,34 +249,3 @@ const deleteDirectory = (dirPath) => {
         });
     });
 };
-
-
-// exports.applyForProject = async (req, res) => {
-//     const { projectId } = req.body; // ดึง project_id จากคำขอ
-
-//     try {
-//         // ดึงข้อมูลของโปรเจคจากฐานข้อมูล
-//         const [rows] = await connection.query('SELECT project_expiration_date FROM projects WHERE project_id = ?', [projectId]);
-
-//         if (rows.length === 0) {
-//             return res.status(404).send('Project not found');
-//         }
-
-//         const project = rows[0];
-//         const expirationDate = moment(project.project_expiration_date);
-
-//         // เช็คว่าปัจจุบันเกินวันหมดเขตหรือยัง
-//         if (moment().isAfter(expirationDate)) {
-//             return res.status(403).send('This project has reached its expiration date. Applications are no longer accepted.');
-//         }
-
-//         // ถ้ายังไม่หมดเขต ให้ดำเนินการสมัครต่อไป
-//         // Your logic for applying to the project
-
-//         res.status(200).send('Application successful');
-
-//     } catch (error) {
-//         console.error('Error:', error);
-//         res.status(500).send('An error occurred while applying for the project.');
-//     }
-// };

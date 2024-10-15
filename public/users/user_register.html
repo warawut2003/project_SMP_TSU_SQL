@@ -108,7 +108,7 @@
     
         <div class="form-group">
             <label for="User_age">อายุ:</label>
-            <input type="number" id="User_age" name="User_age" required>
+            <input type="number" id="User_age" name="User_age" required readonly>
         </div>
 
         <span id="PhoneNumError" class="error-message-input" style=" display: none;">กรุณาเบอร์โทรศัพน์ให้ถูกต้อง</span>
@@ -157,10 +157,22 @@
         // Set project_id_fk hidden field from localStorage
         document.getElementById('project_id_fk').value = localStorage.getItem('project_id') || '';
         
-        // Optional: Clear project_id from localStorage after use
-        // localStorage.removeItem('project_id');
+        
 
-        console.log('Project ID:', document.getElementById('project_id_fk').value);
+        // ฟังก์ชันคำนวณอายุ
+        function calculateAge() {
+            const birthDate = new Date(document.getElementById('User_Date_Birth').value);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
+            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            document.getElementById('User_age').value = age; // กำหนดค่าอายุที่คำนวณแล้วลงใน input
+        }
+
+        document.getElementById('User_Date_Birth').addEventListener('change', calculateAge);
+
 
         // Preview image and update file name for the image
         document.getElementById('User_Image').addEventListener('change', function(event) {

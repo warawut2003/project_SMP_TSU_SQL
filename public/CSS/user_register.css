@@ -138,6 +138,12 @@ form::after {
     margin-bottom: 0; /* ไม่ต้องการระยะห่างด้านล่าง */
     margin-left: 260px;
 }
+
+input[readonly] {
+    background-color: #e0e0e0; /* สีพื้นหลังทึบ */
+    border: 2px solid #b0b0b0; /* ขอบที่เด่นชัด */
+    color: #333; /* สีของข้อความ */
+}
 /* Optional: Add media queries for responsiveness */
 @media (max-width: 768px) {
     form {
